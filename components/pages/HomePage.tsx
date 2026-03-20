@@ -105,7 +105,7 @@ const Services = () => (
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">What we offer</p>
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Our Bespoke Services</h2>
       </motion.div>
-      <Link href="/services" className="md:px-6 px-2 h-11 rounded-full border border-secondary/45 text-foreground md:text-[14px] text-[12px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:block hidden">View All Services</Link>
+      <Link href="/services" className="md:px-6 px-2 h-11 rounded-full border border-secondary/45 text-foreground md:text-[14px] text-[12px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:flex hidden">View All Services</Link>
     </div>
 
     <div className="grid md:grid-cols-3 gap-7">
@@ -171,7 +171,7 @@ const ShopByRoom = () => (
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Shop by Room</p>
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Find Your Perfect Space</h2>
       </div>
-      <Link href="/shop" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:block hidden">Browse Rooms</Link>
+      <Link href="/shop" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden ">Browse Rooms</Link>
     </div>
 
     <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -255,7 +255,7 @@ const ProductSlider = () => {
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Best Sellers</p>
           <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">New Essentials</h2>
         </div>
-        <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:block hidden">View All Products</Link>
+        <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center md:flex hidden">View All Products</Link>
       </div>
 
       <div className="relative">
@@ -310,7 +310,7 @@ const Craft = () => (
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Craft & Quality</p>
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Built for Everyday Living</h2>
       </div>
-      <Link href="/about" className="px-[18px] h-11 rounded-full bg-secondary/18 text-dark border border-secondary/35 text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/26 hover:border-secondary/55 transition-all flex items-center md:block hidden">Our Story</Link>
+      <Link href="/about" className="px-[18px] h-11 rounded-full bg-secondary/18 text-dark border border-secondary/35 text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/26 hover:border-secondary/55 transition-all flex items-center md:flex hidden">Our Story</Link>
     </div>
 
     <div className="grid lg:grid-cols-[1.15fr_0.85fr] gap-10 items-center">
@@ -449,7 +449,7 @@ const Blog = () => {
     <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">The Journal</h2>
-        <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:block hidden">View All Posts</Link>
+        <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden">View All Posts</Link>
       </div>
 
       <div className="relative">

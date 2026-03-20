@@ -8,7 +8,6 @@ import {
   Sun,
   Menu,
   X,
-  ChevronDown,
   ArrowRight,
   Plus,
   Minus,
@@ -23,38 +22,320 @@ import { Link, useLocation, useNavigate } from "@/lib/router";
 import { useCart } from "@/context/CartContext";
 import { products } from "@/data/products";
 
+type MegaCard = {
+  title: string;
+  href: string;
+  img: string;
+};
+
+type MegaItem = {
+  title: string;
+  href: string;
+  cards: MegaCard[];
+};
+
+type MegaColumn = {
+  title: string;
+  links: { title: string; href: string }[];
+};
+
+type ShopMegaTab =
+  | {
+      key: string;
+      title: string;
+      type: "category-grid";
+      items: MegaItem[];
+    }
+  | {
+      key: string;
+      title: string;
+      type: "all-products";
+      columns: MegaColumn[];
+      promoCards: MegaCard[];
+    }
+  | {
+      key: string;
+      title: string;
+      type: "offers";
+      promoCards: MegaCard[];
+    };
+
 const navLinks = [
-  { label: "Shop", href: "/shop" },
-  { label: "Services", href: "/services" },
-  { label: "Journal", href: "/blog" },
   { label: "About", href: "/about" },
   { label: "Contact", href: "/contact" },
 ];
 
-const shopCollections = [
+const shopMegaTabs: ShopMegaTab[] = [
   {
-    title: "Living Room",
-    id: "living-room",
-    sub: "Sofas, accent chairs, coffee tables",
-    img: "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&q=80&w=1200",
+    key: "living-room",
+    title: "Living room",
+    type: "category-grid",
+    items: [
+      {
+        title: "Sofas & Loungers",
+        href: "/category/living-room/sofas-loungers",
+        cards: [
+          {
+            title: "Sofas",
+            href: "/category/living-room/sofas",
+            img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Sofa cum beds",
+            href: "/category/living-room/sofa-cum-beds",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "L shaped and corner sofa",
+            href: "/category/living-room/l-shaped-sofas",
+            img: "https://images.unsplash.com/photo-1493663284031-b7e3aefcae8e?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Sofa sets",
+            href: "/category/living-room/sofa-sets",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Recliner Sofas",
+            href: "/category/living-room/recliner-sofas",
+            img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200",
+          },
+        ],
+      },
+      { title: "Tables", href: "/category/living-room/tables", cards: [] },
+      { title: "Bean bags & pouffes", href: "/category/living-room/bean-bags-pouffes", cards: [] },
+      { title: "Cabinets", href: "/category/living-room/cabinets", cards: [] },
+      { title: "Chairs", href: "/category/living-room/chairs", cards: [] },
+      { title: "Soft furnishing", href: "/category/living-room/soft-furnishing", cards: [] },
+    ],
   },
   {
+    key: "bedroom",
     title: "Bedroom",
-    id: "bedroom",
-    sub: "Beds, nightstands, soft textiles",
-    img: "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&q=80&w=1200",
+    type: "category-grid",
+    items: [
+      {
+        title: "Almirahs & wardrobes",
+        href: "/category/bedroom/almirahs-wardrobes",
+        cards: [
+          {
+            title: "Steel Almirahs",
+            href: "/category/bedroom/steel-almirahs",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Wooden Wardrobes",
+            href: "/category/bedroom/wooden-wardrobes",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+        ],
+      },
+      { title: "Beds", href: "/category/bedroom/beds", cards: [] },
+      { title: "Bed and Mattress Sets", href: "/category/bedroom/bed-mattress-sets", cards: [] },
+      { title: "Mattresses", href: "/category/bedroom/mattresses", cards: [] },
+      { title: "Tables", href: "/category/bedroom/tables", cards: [] },
+      { title: "Chairs", href: "/category/bedroom/chairs", cards: [] },
+      { title: "Home lockers", href: "/category/bedroom/home-lockers", cards: [] },
+      { title: "Cabinets", href: "/category/bedroom/cabinets", cards: [] },
+      { title: "Bean bags and pouffes", href: "/category/bedroom/bean-bags-pouffes", cards: [] },
+    ],
   },
   {
-    title: "Dining Room",
-    id: "dining-room",
-    sub: "Tables, chairs, sideboards",
-    img: "https://images.unsplash.com/photo-1549187774-b4e9b0445b41?auto=format&fit=crop&q=80&w=1200",
+    key: "dining-room",
+    title: "Dining room",
+    type: "category-grid",
+    items: [
+      {
+        title: "Dining Sets",
+        href: "/category/dining-room/dining-sets",
+        cards: [
+          {
+            title: "4 Seater",
+            href: "/category/dining-room/4-seater",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "6 Seater",
+            href: "/category/dining-room/6-seater",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "8 Seater",
+            href: "/category/dining-room/8-seater",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+        ],
+      },
+      { title: "Dining Tables", href: "/category/dining-room/dining-tables", cards: [] },
+      { title: "Dining Chairs", href: "/category/dining-room/dining-chairs", cards: [] },
+      { title: "Dining Benches", href: "/category/dining-room/dining-benches", cards: [] },
+      { title: "Dining Accessories", href: "/category/dining-room/dining-accessories", cards: [] },
+    ],
   },
   {
-    title: "Decor",
-    id: "decor",
-    sub: "Lighting, ceramics, wall accents",
-    img: "https://images.unsplash.com/photo-1501045661006-fcebe0257c3f?auto=format&fit=crop&q=80&w=1200",
+    key: "office-study",
+    title: "Office and Study",
+    type: "category-grid",
+    items: [
+      {
+        title: "Office Chairs",
+        href: "/category/office-study/office-chairs",
+        cards: [
+          {
+            title: "Ergonomic Chairs",
+            href: "/category/office-study/ergonomic-chairs",
+            img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Study Tables",
+            href: "/category/office-study/study-tables",
+            img: "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Storage Cabinets",
+            href: "/category/office-study/storage-cabinets",
+            img: "https://images.unsplash.com/photo-1497366412874-3415097a27e7?auto=format&fit=crop&q=80&w=1200",
+          },
+        ],
+      },
+      { title: "Study Tables", href: "/category/office-study/study-tables", cards: [] },
+      { title: "Bookshelves", href: "/category/office-study/bookshelves", cards: [] },
+      { title: "Filing Cabinets", href: "/category/office-study/filing-cabinets", cards: [] },
+      { title: "Workstations", href: "/category/office-study/workstations", cards: [] },
+    ],
+  },
+  {
+    key: "modular-kitchens",
+    title: "Modular Kitchens",
+    type: "category-grid",
+    items: [
+      {
+        title: "Straight Kitchen",
+        href: "/category/modular-kitchens/straight-kitchen",
+        cards: [
+          {
+            title: "Compact Kitchens",
+            href: "/category/modular-kitchens/compact-kitchens",
+            img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Premium Kitchens",
+            href: "/category/modular-kitchens/premium-kitchens",
+            img: "https://images.unsplash.com/photo-1489515217757-5fd1be406fef?auto=format&fit=crop&q=80&w=1200",
+          },
+          {
+            title: "Pantry Storage",
+            href: "/category/modular-kitchens/pantry-storage",
+            img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=1200",
+          },
+        ],
+      },
+      { title: "L Shape Kitchen", href: "/category/modular-kitchens/l-shape", cards: [] },
+      { title: "U Shape Kitchen", href: "/category/modular-kitchens/u-shape", cards: [] },
+      { title: "Island Kitchen", href: "/category/modular-kitchens/island", cards: [] },
+      { title: "Pantry Units", href: "/category/modular-kitchens/pantry-units", cards: [] },
+    ],
+  },
+  {
+    key: "all-products",
+    title: "All Products",
+    type: "all-products",
+    columns: [
+      {
+        title: "Almirahs & wardrobes",
+        links: [
+          { title: "Steel Almirahs", href: "/shop/steel-almirahs" },
+          { title: "Wooden Wardrobes", href: "/shop/wooden-wardrobes" },
+          { title: "2-Door Wardrobes", href: "/shop/2-door-wardrobes" },
+          { title: "3-Door Wardrobes", href: "/shop/3-door-wardrobes" },
+          { title: "4-Door Wardrobes", href: "/shop/4-door-wardrobes" },
+          { title: "Sliding Wardrobes", href: "/shop/sliding-wardrobes" },
+        ],
+      },
+      {
+        title: "Sofas & loungers",
+        links: [
+          { title: "Sofas", href: "/shop/sofas" },
+          { title: "Sofa sets", href: "/shop/sofa-sets" },
+          { title: "Recliner Sofas", href: "/shop/recliner-sofas" },
+          { title: "Sofa cum beds", href: "/shop/sofa-cum-beds" },
+          { title: "L shaped and corner sofas", href: "/shop/l-shaped-sofas" },
+          { title: "1-Seater Sofas", href: "/shop/1-seater-sofas" },
+          { title: "2-Seater Sofas", href: "/shop/2-seater-sofas" },
+          { title: "3-Seater Sofas", href: "/shop/3-seater-sofas" },
+        ],
+      },
+      {
+        title: "Beds",
+        links: [
+          { title: "King Beds", href: "/shop/king-beds" },
+          { title: "Queen Beds", href: "/shop/queen-beds" },
+          { title: "Single Beds", href: "/shop/single-beds" },
+          { title: "Double Beds", href: "/shop/double-beds" },
+          { title: "Wooden Beds", href: "/shop/wooden-beds" },
+          { title: "Metal Beds", href: "/shop/metal-beds" },
+          { title: "Bed and Mattress Sets", href: "/shop/bed-mattress-sets" },
+        ],
+      },
+      {
+        title: "Dining furniture",
+        links: [
+          { title: "Dining Sets", href: "/shop/dining-sets" },
+          { title: "Dining Tables", href: "/shop/dining-tables" },
+          { title: "Dining Chairs", href: "/shop/dining-chairs" },
+          { title: "Dining Benches", href: "/shop/dining-benches" },
+          { title: "Soft Furnishing", href: "/shop/soft-furnishing" },
+          { title: "Dining Accessories", href: "/shop/dining-accessories" },
+        ],
+      },
+      {
+        title: "Services",
+        links: [
+          { title: "Home Interiors (Available in Mumbai)", href: "/services/home-interiors" },
+          { title: "Room Furniture", href: "/shop/room-furniture" },
+          { title: "Cabinets", href: "/shop/cabinets" },
+        ],
+      },
+    ],
+    promoCards: [
+      {
+        title: "Mega Sale",
+        href: "/offers/mega-sale",
+        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+      },
+      {
+        title: "Bestsellers",
+        href: "/offers/bestsellers",
+        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+      },
+      {
+        title: "Clearance Corner",
+        href: "/offers/clearance",
+        img: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1200",
+      },
+    ],
+  },
+  {
+    key: "offers",
+    title: "Offers",
+    type: "offers",
+    promoCards: [
+      {
+        title: "Mega Sale",
+        href: "/offers/mega-sale",
+        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+      },
+      {
+        title: "Bestsellers",
+        href: "/offers/bestsellers",
+        img: "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1200",
+      },
+      {
+        title: "Clearance Corner",
+        href: "/offers/clearance",
+        img: "https://images.unsplash.com/photo-1484101403633-562f891dc89a?auto=format&fit=crop&q=80&w=1200",
+      },
+    ],
   },
 ];
 
@@ -93,6 +374,24 @@ const Announcement = () => (
   </div>
 );
 
+const MegaCardLink = ({ card }: { card: MegaCard }) => (
+  <Link href={card.href} className="group block">
+    <div className="overflow-hidden border border-[#d8d0c6] bg-white">
+      <img
+        src={card.img}
+        alt={card.title}
+        className="h-[160px] w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+      />
+    </div>
+    <div className="flex items-center justify-between border-b border-[#d8d0c6] py-3">
+      <span className="text-[16px] font-medium tracking-tight text-[#3d352e]">
+        {card.title}
+      </span>
+      <ArrowRight size={18} className="text-[#5b5147]" />
+    </div>
+  </Link>
+);
+
 const Navbar = ({
   theme,
   toggleTheme,
@@ -106,14 +405,23 @@ const Navbar = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
   const [isMobileMegaOpen, setIsMobileMegaOpen] = useState(false);
+  const [activeMegaTab, setActiveMegaTab] = useState("living-room");
+  const [activeMegaItemIndex, setActiveMegaItemIndex] = useState(0);
+
   const { cartCount } = useCart();
   const { pathname } = useLocation();
+
+  const activeTab = shopMegaTabs.find((tab) => tab.key === activeMegaTab) || shopMegaTabs[0];
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 8);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    setActiveMegaItemIndex(0);
+  }, [activeMegaTab]);
 
   useEffect(() => {
     setIsMobileMenuOpen(false);
@@ -134,144 +442,192 @@ const Navbar = ({
   }, [isMobileMenuOpen]);
 
   const desktopNavClass = (href: string) =>
-    `relative inline-flex items-center py-2 text-[11px] font-extrabold uppercase tracking-[2px] transition-all duration-200 ${
+    `group relative inline-flex items-center py-2 text-[14px] font-semibold tracking-[0.06em] transition-all duration-200 ${
       pathname === href ? "text-secondary" : "text-foreground hover:text-secondary"
     }`;
+
+  const currentCategoryItem =
+    activeTab.type === "category-grid" ? activeTab.items[activeMegaItemIndex] : null;
 
   return (
     <>
       <nav
-        className={`fixed left-0 right-0 top-9 z-[1100] h-[70px] border-b transition-all duration-200 sm:h-[74px] ${
+        className={`fixed left-0 right-0 top-9 z-[1100] h-[68px] border-b transition-all duration-200 sm:h-[74px] ${
           isScrolled
-            ? "border-border bg-background/90 shadow-md backdrop-blur-md"
-            : "border-border/70 bg-background/85 backdrop-blur-md"
+            ? "border-border bg-background/95 shadow-md backdrop-blur-md"
+            : "border-border/70 bg-background/92 backdrop-blur-md"
         }`}
       >
-        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-[5%]">
-          {/* Logo */}
-          <div className="shrink-0">
-            <Link
-              href="/"
-              className="select-none font-heading text-[20px] font-bold uppercase tracking-[2px] text-foreground xs:text-[22px] sm:text-[24px] lg:text-[28px]"
-            >
-           <img src="/assets/Image/nestcraft-logo.svg" alt="Logo" className="w-20 h-20" />
-            </Link>
-          </div>
-
-          {/* Desktop navigation */}
-          <div className="hidden lg:flex items-center gap-8 xl:gap-10">
-            <div
-              className="relative"
-              onMouseEnter={() => setIsMegaMenuOpen(true)}
-              onMouseLeave={() => setIsMegaMenuOpen(false)}
-            >
-              <Link
-                href="/shop"
-                className={`group relative inline-flex items-center gap-1 py-2 text-[11px] font-extrabold uppercase tracking-[2px] transition-all duration-200 ${
-                  isMegaMenuOpen || pathname === "/shop"
-                    ? "text-secondary"
-                    : "text-foreground hover:text-secondary"
-                }`}
-              >
-                <span>Shop</span>
-                <ChevronDown
-                  size={14}
-                  className={`transition-transform duration-200 ${
-                    isMegaMenuOpen ? "rotate-180" : ""
-                  }`}
-                />
-                <span
-                  className={`absolute -bottom-1 left-0 h-[2px] rounded-full bg-secondary transition-all duration-200 ${
-                    isMegaMenuOpen || pathname === "/shop"
-                      ? "w-full"
-                      : "w-0 group-hover:w-full"
-                  }`}
+        <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-[2%]">
+          {/* left side */}
+          <div className="flex min-w-0 items-center gap-6 xl:gap-8">
+            <div className="shrink-0">
+              <Link href="/" className="block">
+                <img
+                  src="/assets/Image/nestcraft-logo.svg"
+                  alt="NestCraft"
+                  className="h-8 w-auto sm:h-9 lg:h-13"
                 />
               </Link>
+            </div>
+
+            {/* desktop nav near logo */}
+            <div
+              className="relative hidden xl:block"
+              onMouseLeave={() => setIsMegaMenuOpen(false)}
+            >
+              <div className="flex items-center gap-7">
+                {shopMegaTabs.map((tab) => {
+                  const isActive = activeMegaTab === tab.key && isMegaMenuOpen;
+
+                  return (
+                    <button
+                      key={tab.key}
+                      onMouseEnter={() => {
+                        setActiveMegaTab(tab.key);
+                        setIsMegaMenuOpen(true);
+                      }}
+                      className={`group relative inline-flex items-center py-2 text-[14px] font-medium transition-colors ${
+                        isActive
+                          ? "text-[#3d352e] hover:text-[#98c45f]"
+                          : "text-[#0b1610] hover:text-[#98c45f]"
+                      }`}
+                    >
+                      <span className="whitespace-nowrap">{tab.title}</span>
+                      <span
+                        className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-[#98c45f] transition-all duration-200 ${
+                          isActive ? "w-12" : "w-0 group-hover:w-12"
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+
+                <div className="mx-1 h-5 w-px bg-border/70" />
+
+                {navLinks.map((item) => (
+                  <Link key={item.href} href={item.href} className={desktopNavClass(item.href)}>
+                    <span className="relative">
+                      {item.label}
+                      <span
+                        className={`absolute -bottom-1 left-0 h-[2px] rounded-full bg-secondary transition-all duration-200 ${
+                          pathname === item.href ? "w-full" : "w-0 group-hover:w-full"
+                        }`}
+                      />
+                    </span>
+                  </Link>
+                ))}
+              </div>
 
               <AnimatePresence>
                 {isMegaMenuOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 14 }}
+                    initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
+                    exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.18 }}
-                    className="fixed left-1/2 top-[106px] z-[1150] w-[min(1180px,calc(100vw-32px))] -translate-x-1/2 overflow-hidden rounded-[28px] border border-border bg-surface shadow-[0_25px_80px_rgba(0,0,0,0.18)]"
+                    className="absolute left-0 top-full z-[1150] pt-3"
+                    onMouseEnter={() => setIsMegaMenuOpen(true)}
                   >
-                    <div className="grid gap-6 p-5 lg:grid-cols-[280px_1fr] xl:gap-8 xl:p-6">
-                      {/* intro */}
-                      <div className="rounded-[22px] border border-border bg-muted/10 p-5 xl:p-6">
-                        <div className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[2px] text-secondary">
-                          <span>Furniture</span>
-                          <span className="opacity-50">•</span>
-                          <span>Curated</span>
-                        </div>
+                    <div className="w-[min(1180px,calc(100vw-180px))] overflow-hidden border border-[#ddd4ca] bg-[#f7f3ed] shadow-[0_25px_80px_rgba(0,0,0,0.16)]">
+                      <div className="min-h-[460px] bg-[#f7f3ed]">
+                        {activeTab.type === "category-grid" && currentCategoryItem && (
+                          <div className="grid grid-cols-[320px_1fr]">
+                            <div className="border-r border-[#ddd4ca] px-6 py-6">
+                              <div className="space-y-0">
+                                {activeTab.items.map((item, index) => {
+                                  const isActive = index === activeMegaItemIndex;
 
-                        <h3 className="mt-3 font-heading text-[28px] font-bold leading-[1] text-foreground xl:text-[34px]">
-                          Design-led essentials for every room.
-                        </h3>
-
-                        <p className="mt-3 max-w-[240px] text-sm font-semibold leading-6 text-muted">
-                          Explore best-selling silhouettes, artisan materials,
-                          and modern classics crafted for timeless living.
-                        </p>
-
-                        <Link
-                          href="/shop"
-                          className="mt-6 inline-flex h-11 items-center rounded-full bg-primary px-5 text-[13px] font-semibold uppercase tracking-wider text-white transition-all hover:-translate-y-[1px] hover:bg-primary/90"
-                        >
-                          Explore Collections
-                        </Link>
-                      </div>
-
-                      {/* cards */}
-                      <div className="grid grid-cols-2 gap-4 xl:grid-cols-4 xl:gap-5">
-                        {shopCollections.map((item) => (
-                          <Link
-                            key={item.title}
-                            href={`/category/${item.id}`}
-                            className="group block rounded-[20px] p-1 transition-all hover:bg-muted/10"
-                          >
-                            <div className="overflow-hidden rounded-[18px] border border-border bg-muted/10">
-                              <img
-                                src={item.img}
-                                alt={item.title}
-                                className="h-[150px] w-full object-cover transition-transform duration-300 group-hover:scale-[1.05] xl:h-[170px]"
-                              />
-                            </div>
-
-                            <div className="pt-3">
-                              <div className="font-heading text-[24px] font-bold leading-tight tracking-tight text-foreground transition-colors group-hover:text-secondary">
-                                {item.title}
-                              </div>
-                              <div className="mt-2 text-sm font-bold leading-6 text-muted">
-                                {item.sub}
+                                  return (
+                                    <button
+                                      key={item.title}
+                                      onMouseEnter={() => setActiveMegaItemIndex(index)}
+                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-4 text-left text-[18px] font-medium transition-all ${
+                                        isActive
+                                          ? "bg-white text-[#ff5e4d]"
+                                          : "text-[#4f4741] hover:bg-white/70"
+                                      }`}
+                                    >
+                                      {item.title}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             </div>
-                          </Link>
-                        ))}
+
+                            <div className="px-7 py-6">
+                              {currentCategoryItem.cards.length > 0 ? (
+                                <div className="grid grid-cols-2 gap-x-8 gap-y-9 xl:grid-cols-3">
+                                  {currentCategoryItem.cards.map((card) => (
+                                    <MegaCardLink key={card.title} card={card} />
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className="flex h-full items-center justify-center">
+                                  <Link
+                                    href={currentCategoryItem.href}
+                                    className="inline-flex items-center gap-2 rounded-full border border-[#cfc5b9] px-5 py-3 text-[14px] font-medium text-[#3d352e] transition hover:bg-white"
+                                  >
+                                    View {currentCategoryItem.title}
+                                    <ArrowRight size={16} />
+                                  </Link>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab.type === "all-products" && (
+                          <div className="grid grid-cols-[1fr_1fr_1fr_1fr_300px] gap-0 px-6 py-8">
+                            {activeTab.columns.map((column) => (
+                              <div
+                                key={column.title}
+                                className="min-w-0 border-r border-[#d6cdc2] px-5 last:border-r-0"
+                              >
+                                <h4 className="mb-5 text-[18px] font-medium text-[#ff5e4d]">
+                                  {column.title}
+                                </h4>
+                                <ul className="space-y-2.5">
+                                  {column.links.map((link) => (
+                                    <li key={link.title}>
+                                      <Link
+                                        href={link.href}
+                                        className="text-[15px] text-[#4b443e] transition hover:text-[#ff5e4d]"
+                                      >
+                                        {link.title}
+                                      </Link>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            ))}
+
+                            <div className="pl-6">
+                              <div className="space-y-6">
+                                {activeTab.promoCards.map((card) => (
+                                  <MegaCardLink key={card.title} card={card} />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
+                        {activeTab.type === "offers" && (
+                          <div className="grid grid-cols-3 gap-8 px-8 py-8">
+                            {activeTab.promoCards.map((card) => (
+                              <MegaCardLink key={card.title} card={card} />
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-
-            {navLinks.slice(1).map((item) => (
-              <Link key={item.href} href={item.href} className={desktopNavClass(item.href)}>
-                <span className="relative">
-                  {item.label}
-                  <span
-                    className={`absolute -bottom-1 left-0 h-[2px] rounded-full bg-secondary transition-all duration-200 ${
-                      pathname === item.href ? "w-full" : "w-0"
-                    }`}
-                  />
-                </span>
-              </Link>
-            ))}
           </div>
 
-          {/* Right actions */}
+          {/* right actions */}
           <div className="flex items-center gap-1 sm:gap-1.5">
             <button
               onClick={onSearchOpen}
@@ -292,7 +648,6 @@ const Navbar = ({
               )}
             </Link>
 
-            {/* lg+ theme toggle with label */}
             <button
               onClick={toggleTheme}
               className="hidden lg:inline-flex h-[38px] items-center gap-2 rounded-full border border-border bg-surface/70 px-3.5 text-[11px] font-extrabold uppercase tracking-wider text-foreground transition-all hover:border-secondary/50"
@@ -305,7 +660,6 @@ const Navbar = ({
               <span>{theme === "dark" ? "Light" : "Dark"}</span>
             </button>
 
-            {/* mobile / tablet icon-only theme toggle (< lg) */}
             <button
               onClick={toggleTheme}
               className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border bg-surface/70 text-foreground transition-all hover:border-secondary/50 lg:hidden sm:h-10 sm:w-10"
@@ -317,9 +671,8 @@ const Navbar = ({
               )}
             </button>
 
-            {/* hamburger — only visible below lg */}
             <button
-              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-all hover:bg-muted/10 lg:hidden sm:h-10 sm:w-10"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-all hover:bg-muted/10 xl:hidden sm:h-10 sm:w-10"
               onClick={() => setIsMobileMenuOpen(true)}
               aria-label="Open navigation menu"
             >
@@ -329,7 +682,7 @@ const Navbar = ({
         </div>
       </nav>
 
-      {/* Mobile drawer */}
+      {/* mobile drawer */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -337,7 +690,7 @@ const Navbar = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 top-[106px] z-[1098] bg-black/45 lg:hidden"
+              className="fixed inset-0 top-[106px] z-[1098] bg-black/45 xl:hidden"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
@@ -346,7 +699,7 @@ const Navbar = ({
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed right-0 top-[106px] z-[1099] h-[calc(100vh-106px)] w-[min(92vw,380px)] overflow-y-auto border-l border-border bg-background px-5 pb-8 pt-5 shadow-2xl lg:hidden"
+              className="fixed right-0 top-[106px] z-[1099] h-[calc(100vh-106px)] w-[min(94vw,420px)] overflow-y-auto border-l border-border bg-background px-5 pb-8 pt-5 shadow-2xl xl:hidden"
             >
               <div className="mb-5 flex items-center justify-between">
                 <p className="text-[11px] font-black uppercase tracking-[2px] text-muted">
@@ -382,75 +735,83 @@ const Navbar = ({
                       exit={{ height: 0, opacity: 0 }}
                       className="overflow-hidden"
                     >
-                      <div className="grid gap-3 pb-3">
-                        {shopCollections.map((item) => (
-                          <Link
-                            key={item.title}
-                            href={`/category/${item.id}`}
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="rounded-[18px] border border-border bg-surface p-3 transition-all hover:border-secondary/40"
-                          >
-                            <div className="flex items-center gap-3">
-                              <img
-                                src={item.img}
-                                alt={item.title}
-                                className="h-16 w-16 rounded-xl object-cover"
-                              />
-                              <div>
-                                <div className="font-heading text-[20px] font-bold leading-tight text-foreground">
-                                  {item.title}
-                                </div>
-                                <small className="mt-1 block text-xs font-bold leading-5 text-muted">
-                                  {item.sub}
-                                </small>
-                              </div>
+                      <div className="space-y-5 pb-4">
+                        {shopMegaTabs.map((tab) => (
+                          <div key={tab.key} className="rounded-2xl border border-border bg-surface p-4">
+                            <div className="mb-3 text-[14px] font-bold text-foreground">
+                              {tab.title}
                             </div>
-                          </Link>
+
+                            {tab.type === "category-grid" && (
+                              <div className="space-y-2">
+                                {tab.items.map((item) => (
+                                  <Link
+                                    key={item.title}
+                                    href={item.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block text-[14px] text-muted transition hover:text-secondary"
+                                  >
+                                    {item.title}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+
+                            {tab.type === "all-products" && (
+                              <div className="space-y-3">
+                                {tab.columns.map((col) => (
+                                  <div key={col.title}>
+                                    <div className="mb-1 text-[13px] font-semibold text-secondary">
+                                      {col.title}
+                                    </div>
+                                    <div className="space-y-1">
+                                      {col.links.slice(0, 4).map((link) => (
+                                        <Link
+                                          key={link.title}
+                                          href={link.href}
+                                          onClick={() => setIsMobileMenuOpen(false)}
+                                          className="block text-[14px] text-muted transition hover:text-secondary"
+                                        >
+                                          {link.title}
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+
+                            {tab.type === "offers" && (
+                              <div className="space-y-2">
+                                {tab.promoCards.map((card) => (
+                                  <Link
+                                    key={card.title}
+                                    href={card.href}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                    className="block text-[14px] text-muted transition hover:text-secondary"
+                                  >
+                                    {card.title}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         ))}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <Link
-                  href="/shop"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                >
-                  Shop <ArrowRight size={16} />
-                </Link>
-
-                <Link
-                  href="/services"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                >
-                  Services <ArrowRight size={16} />
-                </Link>
-
-                <Link
-                  href="/blog"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                >
-                  Journal <ArrowRight size={16} />
-                </Link>
-
-                <Link
-                  href="/about"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                >
-                  About <ArrowRight size={16} />
-                </Link>
-
-                <Link
-                  href="/contact"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
-                >
-                  Contact <ArrowRight size={16} />
-                </Link>
+                {navLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center justify-between rounded-2xl px-1 py-3 text-[13px] font-black uppercase tracking-[2px] text-foreground"
+                  >
+                    {item.label} <ArrowRight size={16} />
+                  </Link>
+                ))}
               </div>
 
               <Link
@@ -586,7 +947,7 @@ const SearchOverlay = ({
                       (cat) => (
                         <Link
                           key={cat}
-                          href={`/category/${cat.toLowerCase().replace(" ", "-")}`}
+                          href={`/category/${cat.toLowerCase().replace(/\s+/g, "-")}`}
                           onClick={onClose}
                           className="flex h-11 items-center rounded-full border border-border bg-surface px-5 text-sm font-bold transition-all hover:border-secondary hover:text-secondary sm:h-12 sm:px-6"
                         >
@@ -609,16 +970,19 @@ const Footer = () => (
   <footer className="border-t border-border bg-surface px-[5%] pb-10 pt-20">
     <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
       <div className="space-y-6">
-        <Link
-              href="/"
-              className="select-none font-heading text-[20px] font-bold uppercase tracking-[2px] text-foreground xs:text-[22px] sm:text-[24px] lg:text-[28px]"
-            >
-           <img src="/assets/Image/nestcraft-logo.svg" alt="Logo" className="w-36  h-32" />
-            </Link>
+        <Link href="/" className="block">
+          <img
+            src="/assets/Image/nestcraft-logo.svg"
+            alt="NestCraft"
+            className="h-14 w-auto"
+          />
+        </Link>
+
         <p className="max-w-[300px] font-semibold text-muted">
           Sculpting personal spaces with design-led essentials. Minimalist
           furniture crafted for the modern home.
         </p>
+
         <div className="flex gap-4">
           {[
             { name: "Instagram", icon: Instagram, url: "#" },
@@ -667,7 +1031,6 @@ const Footer = () => (
             { name: "Our Story", path: "/about" },
             { name: "Craftsmanship", path: "/about" },
             { name: "Sustainability", path: "/about" },
-            { name: "Journal", path: "/blog" },
             { name: "Contact", path: "/contact" },
           ].map((item) => (
             <li key={item.name}>
@@ -710,7 +1073,7 @@ const Footer = () => (
     <div className="huge-watermark">NESTCRAFT</div>
 
     <div className="flex flex-col items-center justify-between gap-6 border-t border-border pt-10 md:flex-row">
-      <p className="text-[11px] font-black  tracking-[2px] text-muted">
+      <p className="text-[11px] font-black tracking-[2px] text-muted">
         © 2026 NestCraft Interiors. All rights reserved.
       </p>
       <div className="flex items-center gap-8">
