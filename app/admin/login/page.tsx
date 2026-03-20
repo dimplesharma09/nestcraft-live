@@ -55,7 +55,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-              placeholder="admin@kalpzero.com"
+              placeholder="admin@nestcraft.com"
             />
           </div>
           <div>
