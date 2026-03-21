@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getOrderModel } from "@/models";
 import { authenticateAdmin } from "@/lib/auth";
+import { ObjectId } from "mongodb";
 
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -11,11 +12,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const body = await req.json();
     const Order = await getOrderModel();
 
-    const order = await Order.findByIdAndUpdate(id, {
-      status: body.status,
-      notes: body.notes,
-      shippingAddress: body.shippingAddress
-    }, { new: true }).lean();
+    const order = await Order.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: {
+          ...((body.status !== undefined) && { status: body.status }),
+          ...((body.notes !== undefined) && { notes: body.notes }),
+          ...((body.shippingAddress !== undefined) && { shippingAddress: body.shippingAddress }),
+          updatedAt: new Date()
+        } 
+      },
+      { returnDocument: 'after' }
+    );
 
     if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
 

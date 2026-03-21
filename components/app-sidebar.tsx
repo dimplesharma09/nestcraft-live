@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, Package, Tags, Layers, ShoppingCart, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Tags, Layers, ShoppingCart, LogOut, ListTree } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -30,8 +30,8 @@ export function AppSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <div className="flex h-14 items-center px-4 py-6 font-semibold">
-           <span className="text-xl font-black uppercase text-secondary">KALP <span className="text-primary tracking-widest">ADMIN</span></span>
+          <div className="flex h-14 items-center px-4 py-6 font-semibold border-b border-secondary">
+           <span className="text-xl font-black uppercase text-secondary">Nestcraft <span className="text-primary tracking-widest">ADMIN</span></span>
           </div>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -59,6 +59,11 @@ export function AppSidebar() {
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/admin/attributes"><Tags /><span>Attributes</span></Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/admin/variants"><ListTree /><span>Variants</span></Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

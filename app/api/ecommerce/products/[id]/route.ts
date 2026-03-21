@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getProductModel, getVariantModel } from "@/models";
 import { authenticateAdmin } from "@/lib/auth";
+import { ObjectId } from "mongodb";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -10,10 +11,10 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
   try {
     const Product = await getProductModel();
     const Variant = await getVariantModel();
-    const product = await Product.findById(id).lean();
+    const product = await Product.findOne({ _id: new ObjectId(id) });
     if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
-    const variants = await Variant.find({ productId: product._id }).lean();
+    const variants = await Variant.find({ productId: product._id }).toArray();
     return NextResponse.json({ ...product, variants });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -30,20 +31,30 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     const Product = await getProductModel();
     const Variant = await getVariantModel();
 
-    const product = await Product.findByIdAndUpdate(id, body, { new: true }).lean();
+    // Prevent _id from being updated
+    delete body._id;
+
+    const product = await Product.findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: { ...body, updatedAt: new Date() } },
+      { returnDocument: 'after' }
+    );
+    
     if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
     // If variants array is provided, replace entire variant list
     if (body.variants && Array.isArray(body.variants)) {
       await Variant.deleteMany({ productId: product._id });
       for (const v of body.variants) {
-        await Variant.create({
+        await Variant.insertOne({
           productId: product._id,
           sku: v.sku,
           title: v.title,
           price: v.price || product.price,
           stock: v.stock || 0,
-          optionValues: v.optionValues || {}
+          optionValues: v.optionValues || {},
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
       }
     }
@@ -63,10 +74,10 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ id: s
     const Product = await getProductModel();
     const Variant = await getVariantModel();
 
-    const result = await Product.findByIdAndDelete(id);
+    const result = await Product.findOneAndDelete({ _id: new ObjectId(id) });
     if (!result) return NextResponse.json({ error: "Product not found" }, { status: 404 });
 
-    await Variant.deleteMany({ productId: id });
+    await Variant.deleteMany({ productId: new ObjectId(id) });
 
     return NextResponse.json({ success: true, message: "Product deleted." });
   } catch (error: any) {

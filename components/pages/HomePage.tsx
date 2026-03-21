@@ -99,7 +99,7 @@ const USP = () => (
 );
 
 const Services = () => (
-  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
+  <section className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] ">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">What we offer</p>
@@ -132,7 +132,7 @@ const Services = () => (
 );
 
 const Collections = () => (
-  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] " id="living">
+  <section className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] " id="living">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Our Collections</h2>
       <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center">View All</Link>
@@ -165,7 +165,7 @@ const Collections = () => (
 );
 
 const ShopByRoom = () => (
-  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  pt-0" id="shop-room">
+  <section className="md:pt-[80px] md:pb-[120px] md:px-[5%] py-[50px] px-[5%]  pt-0" id="shop-room">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Shop by Room</p>
@@ -446,7 +446,7 @@ const Blog = () => {
   };
 
   return (
-    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
+    <section className="md:py-[40px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">The Journal</h2>
         <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden">View All Posts</Link>

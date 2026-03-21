@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchAttributes, selectAdminAttributes, selectAdminAttributesLoading } from "@/lib/store/features/adminAttributesSlice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash } from "lucide-react";
 
 export default function AttributesPage() {
-  const [attributes, setAttributes] = useState<any[]>([]);
+  const dispatch = useAppDispatch();
+  const attributes = useAppSelector(selectAdminAttributes);
+  const loading = useAppSelector(selectAdminAttributesLoading);
 
   useEffect(() => {
-    fetch("/api/ecommerce/attributes")
-      .then(res => res.json())
-      .then(data => setAttributes(Array.isArray(data) ? data : []))
-      .catch(console.error);
-  }, []);
+    dispatch(fetchAttributes());
+  }, [dispatch]);
 
   return (
     <div className="space-y-6">
@@ -37,7 +38,13 @@ export default function AttributesPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {attributes.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : attributes.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center h-24 text-muted-foreground">
                   No attribute sets found.

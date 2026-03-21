@@ -296,4 +296,6 @@
   background-color: #222d26 !important;
 }
 
-
+.sidebar-menu-button:hover{
+  background-color: #0d6533 !important;
+}

@@ -18,7 +18,8 @@ import {
   Check
 } from 'lucide-react';
 import { products, categories } from '../../data/products';
-import { useCart } from '../../context/CartContext';
+import { useAppDispatch } from '../../lib/store/hooks';
+import { addToCart } from '../../lib/store/features/cartSlice';
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -27,7 +28,7 @@ const ProductDetailPage = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [openAccordion, setOpenAccordion] = useState<string | null>('details');
   const [isAdded, setIsAdded] = useState(false);
-  const { addToCart } = useCart();
+  const dispatch = useAppDispatch();
 
   const product = useMemo(() => {
     return products.find(p => p.id === Number(id));
@@ -66,7 +67,7 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
-    addToCart(product);
+    dispatch(addToCart(product));
     setIsAdded(true);
     setTimeout(() => setIsAdded(false), 2000);
   };

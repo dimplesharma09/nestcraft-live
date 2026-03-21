@@ -2,12 +2,15 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCart } from '../../context/CartContext';
+import { useAppSelector, useAppDispatch } from '../../lib/store/hooks';
+import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from '../../lib/store/features/cartSlice';
 import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ChevronLeft } from 'lucide-react';
 import { Link } from '@/lib/router';
 
 const CartPage = () => {
-  const { cart, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const cart = useAppSelector(selectCartItems);
+  const cartTotal = useAppSelector(selectCartTotal);
+  const dispatch = useAppDispatch();
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-IN', {
@@ -76,7 +79,7 @@ const CartPage = () => {
                         <Link href={`/product/${item.id}`}>{item.title}</Link>
                       </h3>
                       <button 
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => dispatch(removeFromCart(item.id))}
                         className="text-muted hover:text-red-500 transition-colors p-1"
                       >
                         <Trash2 size={18} />
@@ -89,14 +92,14 @@ const CartPage = () => {
                   <div className="flex items-center gap-6">
                     <div className="flex items-center border border-border rounded-full h-10 px-2 bg-surface">
                       <button 
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: item.quantity - 1 }))}
                         className="w-8 h-8 flex items-center justify-center hover:text-secondary transition-colors"
                       >
                         <Minus size={14} />
                       </button>
                       <span className="w-10 text-center font-bold text-sm">{item.quantity}</span>
                       <button 
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        onClick={() => dispatch(updateQuantity({ productId: item.id, quantity: item.quantity + 1 }))}
                         className="w-8 h-8 flex items-center justify-center hover:text-secondary transition-colors"
                       >
                         <Plus size={14} />

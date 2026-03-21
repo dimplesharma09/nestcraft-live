@@ -16,7 +16,7 @@ export async function GET(req: Request) {
 
   try {
     const AttributeSet = await getAttributeSetModel();
-    const sets = await AttributeSet.find(query).lean();
+    const sets = await AttributeSet.find(query).toArray();
     return NextResponse.json(sets);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
@@ -35,17 +35,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name and attributes array are required" }, { status: 400 });
     }
 
-    const set = new AttributeSet({
+    const setDoc = {
       name: body.name,
       key: body.key || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
       appliesTo: body.appliesTo || 'product',
       contexts: body.contexts || [],
-      attributes: body.attributes
-    });
+      attributes: body.attributes,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
 
-    await set.save();
+    const result = await AttributeSet.insertOne(setDoc);
 
-    return NextResponse.json({ success: true, setId: set._id, key: set.key, message: "Attribute Set created" });
+    return NextResponse.json({ success: true, setId: result.insertedId, key: setDoc.key, message: "Attribute Set created" });
   } catch (error: any) {
     if (error.code === 11000) return NextResponse.json({ error: "Conflict: Duplicate key" }, { status: 409 });
     return NextResponse.json({ error: error.message }, { status: 500 });

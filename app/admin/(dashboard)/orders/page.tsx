@@ -1,19 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchOrders, selectAdminOrders, selectAdminOrdersLoading } from "@/lib/store/features/adminOrdersSlice";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<any[]>([]);
+  const dispatch = useAppDispatch();
+  const orders = useAppSelector(selectAdminOrders);
+  const loading = useAppSelector(selectAdminOrdersLoading);
 
   useEffect(() => {
-    fetch("/api/ecommerce/orders")
-      .then(res => res.json())
-      .then(data => setOrders(Array.isArray(data) ? data : []))
-      .catch(console.error);
-  }, []);
+    dispatch(fetchOrders());
+  }, [dispatch]);
 
   return (
     <div className="space-y-6">
@@ -35,7 +36,13 @@ export default function OrdersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {orders.length === 0 ? (
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
+                  Loading...
+                </TableCell>
+              </TableRow>
+            ) : orders.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center h-24 text-muted-foreground">
                   No orders found.

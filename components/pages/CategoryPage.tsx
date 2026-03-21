@@ -12,12 +12,13 @@ import {
   Filter
 } from 'lucide-react';
 import { products, categories } from '../../data/products';
-import { useCart } from '../../context/CartContext';
+import { useAppDispatch } from '../../lib/store/hooks';
+import { addToCart } from '../../lib/store/features/cartSlice';
 
 const CategoryPage = () => {
   const { id } = useParams<{ id: string }>();
   const [searchQuery, setSearchQuery] = useState('');
-  const { addToCart } = useCart();
+  const dispatch = useAppDispatch();
 
   const currentCategory = useMemo(() => {
     if (!id) return null;
@@ -193,7 +194,7 @@ const CategoryPage = () => {
                         {product.title}
                       </Link>
                       <button 
-                        onClick={() => addToCart(product)}
+                        onClick={() => dispatch(addToCart(product))}
                         className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:scale-110 shadow-lg shrink-0"
                         title="Add to Cart"
                       >

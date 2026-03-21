@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import { MongoClient, Db } from "mongodb";
 
 const MONGODB_URI = process.env.MONGODB_URI;
+const TENANT_DB_NAME = process.env.TENANT_DB_NAME;
 
 if (!MONGODB_URI) {
   throw new Error(
@@ -8,57 +9,41 @@ if (!MONGODB_URI) {
   );
 }
 
-let cachedMaster = (global as any).mongooseMaster;
-let cachedTenant = (global as any).mongooseTenant;
-
-if (!cachedMaster) {
-  cachedMaster = (global as any).mongooseMaster = { conn: null, promise: null };
+if (!TENANT_DB_NAME) {
+  throw new Error(
+    "Please define the TENANT_DB_NAME environment variable inside .env"
+  );
 }
 
-if (!cachedTenant) {
-  cachedTenant = (global as any).mongooseTenant = { conn: null, promise: null };
+let cachedClient = (global as any).mongoClient;
+
+if (!cachedClient) {
+  cachedClient = (global as any).mongoClient = { conn: null, promise: null };
 }
 
-export async function connectMasterDB() {
-  if (cachedMaster.conn) return cachedMaster.conn;
+export async function connectClient(): Promise<MongoClient> {
+  if (cachedClient.conn) return cachedClient.conn;
 
-  if (!cachedMaster.promise) {
-    const opts = {
-      bufferCommands: false,
-      dbName: "kalp_master",
-      serverSelectionTimeoutMS: 5000,
-    };
-    cachedMaster.promise = mongoose.createConnection(MONGODB_URI!, opts).asPromise();
+  if (!cachedClient.promise) {
+    cachedClient.promise = MongoClient.connect(MONGODB_URI as string);
   }
   
   try {
-    cachedMaster.conn = await cachedMaster.promise;
+    cachedClient.conn = await cachedClient.promise;
   } catch (e) {
-    cachedMaster.promise = null;
+    cachedClient.promise = null;
     throw e;
   }
 
-  return cachedMaster.conn;
+  return cachedClient.conn;
 }
 
-export async function connectTenantDB() {
-  if (cachedTenant.conn) return cachedTenant.conn;
+export async function connectMasterDB(): Promise<Db> {
+  const client = await connectClient();
+  return client.db("kalp_master");
+}
 
-  if (!cachedTenant.promise) {
-    const opts = {
-      bufferCommands: false,
-      dbName: "kalp_tenant_nestcraft",
-      serverSelectionTimeoutMS: 5000,
-    };
-    cachedTenant.promise = mongoose.createConnection(MONGODB_URI!, opts).asPromise();
-  }
-  
-  try {
-    cachedTenant.conn = await cachedTenant.promise;
-  } catch (e) {
-    cachedTenant.promise = null;
-    throw e;
-  }
-
-  return cachedTenant.conn;
+export async function connectTenantDB(): Promise<Db> {
+  const client = await connectClient();
+  return client.db(TENANT_DB_NAME);
 }

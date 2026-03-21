@@ -6,6 +6,8 @@ import { authenticateAdmin } from "@/lib/auth";
 
 export async function GET(req: Request) {
   const auth = await authenticateAdmin();
+
+  console.log("auth", auth);
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const url = new URL(req.url);
@@ -23,15 +25,16 @@ export async function GET(req: Request) {
   try {
     const Product = await getProductModel();
     const Variant = await getVariantModel();
-    const products = await Product.find(query).lean();
-    
+    const products = await Product.find(query).toArray();
+
     // Enrich with variant count
     const enriched = await Promise.all(products.map(async (p: any) => {
-      const variants = await Variant.find({ productId: p._id }).lean();
+      const variants = await Variant.find({ productId: p._id }).toArray();
       return {
         ...p,
         variantCount: variants.length,
-        totalStock: variants.reduce((acc: number, v: any) => acc + (v.stock || 0), 0)
+        totalStock: variants.reduce((acc: number, v: any) => acc + (v.stock || 0), 0),
+        variants
       };
     }));
 
@@ -54,7 +57,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name and SKU are required" }, { status: 400 });
     }
 
-    const product = new Product({
+    const productDoc = {
       name: body.name,
       sku: body.sku,
       slug: body.slug || body.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
@@ -66,25 +69,30 @@ export async function POST(req: Request) {
       attributeSetIds: body.attributeSetIds || [],
       gallery: body.gallery || [],
       pricing: body.pricing || {},
-      options: body.options || []
-    });
+      options: body.options || [],
+      createdAt: new Date(),
+      updatedAt: new Date()
+    };
 
-    await product.save();
+    const insertResult = await Product.insertOne(productDoc);
+    const productId = insertResult.insertedId;
 
     if (body.variants && Array.isArray(body.variants)) {
       for (const v of body.variants) {
-        await Variant.create({
-          productId: product._id,
+        await Variant.insertOne({
+          productId: productId,
           sku: v.sku,
           title: v.title,
-          price: v.price || product.price,
+          price: v.price || productDoc.price,
           stock: v.stock || 0,
-          optionValues: v.optionValues || {}
+          optionValues: v.optionValues || {},
+          createdAt: new Date(),
+          updatedAt: new Date()
         });
       }
     }
 
-    return NextResponse.json({ success: true, productId: product._id, slug: product.slug, message: "Product created" });
+    return NextResponse.json({ success: true, productId: productId, slug: productDoc.slug, message: "Product created" });
   } catch (error: any) {
     if (error.code === 11000) return NextResponse.json({ error: "Conflict: Duplicate slug or sku" }, { status: 409 });
     return NextResponse.json({ error: error.message }, { status: 500 });

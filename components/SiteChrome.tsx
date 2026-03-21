@@ -16,10 +16,13 @@ import {
   Facebook,
   Twitter,
   Youtube,
+  MessageCircle,
+  Mail,
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { Link, useLocation, useNavigate } from "@/lib/router";
-import { useCart } from "@/context/CartContext";
+import { useAppSelector } from "@/lib/store/hooks";
+import { selectCartCount } from "@/lib/store/features/cartSlice";
 import { products } from "@/data/products";
 
 type MegaCard = {
@@ -340,36 +343,79 @@ const shopMegaTabs: ShopMegaTab[] = [
 ];
 
 const Announcement = () => (
-  <div className="fixed left-0 right-0 top-0 z-[1200] flex h-9 items-center overflow-hidden border-b border-white/10 bg-primary text-white/90">
-    <div className="flex gap-10 whitespace-nowrap px-[100%] animate-marquee">
-      {[1, 2].map((i) => (
-        <React.Fragment key={i}>
-          <span className="text-[11px] font-semibold tracking-wider sm:text-xs">
-            <strong className="mr-2 uppercase tracking-[2px] text-secondary">
-              Free Delivery
-            </strong>
-            on orders over ₹999
-          </span>
-          <span className="text-[11px] font-semibold tracking-wider sm:text-xs">
-            <strong className="mr-2 uppercase tracking-[2px] text-secondary">
-              Easy Returns
-            </strong>
-            within 14 days
-          </span>
-          <span className="text-[11px] font-semibold tracking-wider sm:text-xs">
-            <strong className="mr-2 uppercase tracking-[2px] text-secondary">
-              New
-            </strong>
-            The Velvet Retreat Collection
-          </span>
-          <span className="text-[11px] font-semibold tracking-wider sm:text-xs">
-            <strong className="mr-2 uppercase tracking-[2px] text-secondary">
-              White-Glove
-            </strong>
-            Assembly Available
-          </span>
-        </React.Fragment>
-      ))}
+  <div className="fixed left-0 right-0 top-0 z-[1200] h-9 border-b border-white/10 bg-primary text-white/90">
+    <div className="mx-auto grid h-full max-w-[1440px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-3 sm:px-6 lg:px-[2%]">
+      {/* left contact info */}
+      <div className="hidden min-w-0 items-center gap-4 lg:flex">
+        <a
+          href="https://wa.me/919876543210"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-white/90 transition hover:text-secondary"
+        >
+          <MessageCircle size={14} className="text-secondary" />
+          <span className="truncate">+91 98765 43210</span>
+        </a>
+
+        <a
+          href="mailto:hello@nestcraft.com"
+          className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-white/90 transition hover:text-secondary"
+        >
+          <Mail size={14} className="text-secondary" />
+          <span className="truncate">hello@nestcraft.com</span>
+        </a>
+      </div>
+
+      {/* center text */}
+      <div className="flex items-center justify-center text-center">
+        <span className="truncate text-[10px] font-semibold uppercase tracking-[1.8px] text-white/90 sm:text-[11px]">
+          <span className="mr-2 text-secondary">Free Delivery</span>
+          on orders over ₹999
+        </span>
+      </div>
+
+      {/* right socials */}
+      <div className="flex items-center justify-end gap-1 sm:gap-1.5">
+        <a
+          href="https://instagram.com"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Instagram"
+          className="flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
+        >
+          <Instagram size={13} />
+        </a>
+
+        <a
+          href="https://facebook.com"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Facebook"
+          className="flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
+        >
+          <Facebook size={13} />
+        </a>
+
+        <a
+          href="https://twitter.com"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Twitter"
+          className="hidden sm:flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
+        >
+          <Twitter size={13} />
+        </a>
+
+        <a
+          href="https://youtube.com"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Youtube"
+          className="hidden sm:flex h-6 w-6 items-center justify-center rounded-full text-white/85 transition hover:bg-white/10 hover:text-secondary"
+        >
+          <Youtube size={13} />
+        </a>
+      </div>
     </div>
   </div>
 );
@@ -408,7 +454,7 @@ const Navbar = ({
   const [activeMegaTab, setActiveMegaTab] = useState("living-room");
   const [activeMegaItemIndex, setActiveMegaItemIndex] = useState(0);
 
-  const { cartCount } = useCart();
+  const cartCount = useAppSelector(selectCartCount);
   const { pathname } = useLocation();
 
   const activeTab = shopMegaTabs.find((tab) => tab.key === activeMegaTab) || shopMegaTabs[0];
@@ -460,7 +506,7 @@ const Navbar = ({
       >
         <div className="mx-auto flex h-full max-w-[1440px] items-center justify-between px-4 sm:px-6 lg:px-[2%]">
           {/* left side */}
-          <div className="flex min-w-0 items-center gap-6 xl:gap-8">
+          {/* <div className="flex min-w-0 items-center gap-6 xl:gap-8"> */}
             <div className="shrink-0">
               <Link href="/" className="block">
                 <img
@@ -530,7 +576,7 @@ const Navbar = ({
                     onMouseEnter={() => setIsMegaMenuOpen(true)}
                   >
                     <div className="w-[min(1180px,calc(100vw-180px))] overflow-hidden border border-[#ddd4ca] bg-[#f7f3ed] shadow-[0_25px_80px_rgba(0,0,0,0.16)]">
-                      <div className="min-h-[460px] bg-[#f7f3ed]">
+                      <div className="min-h-[460px] bg-[#fff]">
                         {activeTab.type === "category-grid" && currentCategoryItem && (
                           <div className="grid grid-cols-[320px_1fr]">
                             <div className="border-r border-[#ddd4ca] px-6 py-6">
@@ -542,10 +588,10 @@ const Navbar = ({
                                     <button
                                       key={item.title}
                                       onMouseEnter={() => setActiveMegaItemIndex(index)}
-                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-4 text-left text-[18px] font-medium transition-all ${
+                                      className={`flex w-full items-center border-b border-[#ddd4ca] px-4 py-4 text-left text-[18px] font-medium transition-all  ${
                                         isActive
-                                          ? "bg-white text-[#ff5e4d]"
-                                          : "text-[#4f4741] hover:bg-white/70"
+                                          ? "hover:bg-[#98c45f]/10 text-[#0d6533]"
+                                          : "text-[#4f4741] hover:bg-[#0d6533]"
                                       }`}
                                     >
                                       {item.title}
@@ -625,7 +671,7 @@ const Navbar = ({
                 )}
               </AnimatePresence>
             </div>
-          </div>
+         
 
           {/* right actions */}
           <div className="flex items-center gap-1 sm:gap-1.5">
@@ -974,7 +1020,7 @@ const Footer = () => (
           <img
             src="/assets/Image/nestcraft-logo.svg"
             alt="NestCraft"
-            className="h-14 w-auto"
+            className="h-26 w-auto"
           />
         </Link>
 
@@ -1073,32 +1119,32 @@ const Footer = () => (
     <div className="huge-watermark">NESTCRAFT</div>
 
     <div className="flex flex-col items-center justify-between gap-6 border-t border-border pt-10 md:flex-row">
-      <p className="text-[11px] font-black tracking-[2px] text-muted">
+      <p className="py-2 text-[14px] font-medium transition-colors text-[#0b1610]">
         © 2026 NestCraft Interiors. All rights reserved.
       </p>
       <div className="flex items-center gap-8">
         <button
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[2px] text-muted transition-colors hover:text-secondary"
+          className="group relative inline-flex items-center  text-[14px] font-medium transition-colors text-[#0b1610] hover:text-[#98c45f]"
         >
           Back to Top <ArrowUp size={14} />
         </button>
         <div className="hidden gap-8 md:flex">
           <a
             href="#"
-            className="text-[11px] font-black uppercase tracking-[2px] text-muted transition-colors hover:text-secondary"
+            className="text-[14px] font-medium transition-colors text-[#0b1610] hover:text-[#98c45f]"
           >
             Terms
           </a>
           <a
             href="#"
-            className="text-[11px] font-black uppercase tracking-[2px] text-muted transition-colors hover:text-secondary"
+            className="text-[14px] font-medium transition-colors text-[#0b1610] hover:text-[#98c45f]"
           >
             Privacy
           </a>
           <a
             href="#"
-            className="text-[11px] font-black uppercase tracking-[2px] text-muted transition-colors hover:text-secondary"
+            className="text-[14px] font-medium transition-colors text-[#0b1610] hover:text-[#98c45f]"
           >
             Cookies
           </a>

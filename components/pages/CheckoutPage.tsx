@@ -2,12 +2,16 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { useCart } from '../../context/CartContext';
+import { useAppSelector, useAppDispatch } from '../../lib/store/hooks';
+import { selectCartItems, selectCartTotal, clearCart } from '../../lib/store/features/cartSlice';
 import { ChevronLeft, CreditCard, Truck, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Link } from '@/lib/router';
 
 const CheckoutPage = () => {
-  const { cart, cartTotal, clearCart } = useCart();
+  const cart = useAppSelector(selectCartItems);
+  const cartTotal = useAppSelector(selectCartTotal);
+  const dispatch = useAppDispatch();
+
   const [step, setStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -29,7 +33,7 @@ const CheckoutPage = () => {
       setTimeout(() => {
         setIsProcessing(false);
         setIsCompleted(true);
-        clearCart();
+        dispatch(clearCart());
       }, 2000);
     }
   };

@@ -1,18 +1,18 @@
 require('dotenv').config();
 
-const mongoose = require("mongoose");
+const { MongoClient } = require("mongodb");
 const MONGODB_URI = "mongodb+srv://vijendrajat693_db_user:6Zdxvnim3i5DnJQq@vj-cluster.mg6hzxx.mongodb.net/";
 
 async function main() {
-  const conn = await mongoose.createConnection(MONGODB_URI, {}).asPromise();
+  const client = await MongoClient.connect(MONGODB_URI);
   console.log("Connected to MongoDB cluster");
   
-  const admin = conn.db.admin();
+  const admin = client.db().admin();
   const listDbs = await admin.listDatabases();
   console.log("Databases: ", listDbs.databases.map(d => d.name));
 
   // Check 'test' db
-  const testDb = conn.useDb('test');
+  const testDb = client.db('test');
   const testUsers = await testDb.collection('users').find({}).toArray();
   if (testUsers.length > 0) {
     console.log("Found users in 'test' db:");
@@ -20,7 +20,7 @@ async function main() {
   }
 
   // Check 'kalp_master' db
-  const masterDb = conn.useDb('kalp_master');
+  const masterDb = client.db('kalp_master');
   const masterUsers = await masterDb.collection('users').find({}).toArray();
   if (masterUsers.length > 0) {
     console.log("Found users in 'kalp_master' db:");
@@ -38,6 +38,7 @@ async function main() {
     console.log("Seeded hello@gmail.com");
   }
 
+  await client.close();
   process.exit(0);
 }
 

@@ -10,6 +10,7 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
+
     if (!email || !password) {
       return NextResponse.json({ success: false, message: "Email and password are required" }, { status: 400 });
     }
@@ -26,13 +27,13 @@ export async function POST(req: Request) {
     // If the database has plain passwords or another hashing, this might need adjusting.
     // For now, attempting bcrypt. If it fails due to plain text, we fallback to direct match (in development)
     const isValid = await bcrypt.compare(password, user.password).catch(() => false);
-    
+
     if (!isValid && password !== user.password) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 
     // Generate JWT
-    const token = jwt.sign({ id: user._id, email: user.email, role: user.role || 'admin' }, JWT_SECRET, { expiresIn: '1d' });
+    const token = jwt.sign({ id: user._id.toString(), email: user.email, role: user.role || 'admin' }, JWT_SECRET, { expiresIn: '1d' });
 
     // Set HTTP-only cookie
     const cookieString = serialize('admin_token', token, {
@@ -43,7 +44,7 @@ export async function POST(req: Request) {
       path: '/'
     });
 
-    const response = NextResponse.json({ success: true, user: { id: user._id, email: user.email, name: user.name } });
+    const response = NextResponse.json({ success: true, user: { id: user._id.toString(), email: user.email, name: user.name } });
     response.headers.set('Set-Cookie', cookieString);
     return response;
   } catch (error) {
