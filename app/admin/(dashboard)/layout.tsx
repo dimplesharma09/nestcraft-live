@@ -3,6 +3,15 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import jwt from "jsonwebtoken";
+import { Separator } from "@/components/ui/separator";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret_change_me_in_prod";
 
@@ -26,14 +35,27 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main className="w-full flex-1 flex flex-col bg-muted/40 relative min-h-screen">
-        <div className="flex h-14 items-center gap-4 border-b bg-background px-6 shrink-0 transition-all">
-          <SidebarTrigger />
-          <h1 className="font-semibold text-lg text-secondary hidden sm:block">
-            Dashboard
-          </h1>
-        </div>
-        <div className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
+      <main className="w-full flex-1 flex flex-col bg-muted/20 relative min-h-screen font-sans antialiased text-foreground">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border/50 bg-background px-4 transition-all sticky top-0 z-10 shadow-sm">
+          <div className="flex items-center gap-2">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem className="hidden md:block">
+                  <BreadcrumbLink href="/admin" className="font-medium text-xs uppercase tracking-wider">
+                    Dashboards
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbItem>
+                  <BreadcrumbPage className="font-bold text-xs uppercase tracking-wider text-primary">Overview</BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
+        </header>
+        <div className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full animate-in fade-in duration-500">
           {children}
         </div>
       </main>

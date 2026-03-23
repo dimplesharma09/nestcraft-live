@@ -65,11 +65,21 @@ export async function POST(req: Request) {
       description: body.description,
       type: body.type || 'physical',
       status: body.status || 'draft',
-      categoryIds: body.categoryIds || [],
-      attributeSetIds: body.attributeSetIds || [],
+      categoryIds: body.categoryIds || body.category_ids || [],
+      primaryCategoryId: body.primaryCategoryId || body.primary_category_id || null,
+      attributeSetIds: body.attributeSetIds || body.attribute_set_ids || [],
+      primaryImageId: body.primaryImageId || body.primary_image_id || "",
       gallery: body.gallery || [],
-      pricing: body.pricing || {},
+      pricing: body.pricing || {
+        price: body.price || 0,
+        compareAtPrice: body.compare_at_price || 0,
+        costPerItem: body.cost_per_item || 0,
+        chargeTax: body.charge_tax ?? true,
+        trackQuantity: body.track_quantity ?? true
+      },
       options: body.options || [],
+      relatedProductIds: body.relatedProductIds || body.related_product_ids || [],
+      templateKey: body.templateKey || body.template_key || "product-split",
       createdAt: new Date(),
       updatedAt: new Date()
     };
@@ -83,9 +93,13 @@ export async function POST(req: Request) {
           productId: productId,
           sku: v.sku,
           title: v.title,
-          price: v.price || productDoc.price,
+          price: v.price || productDoc.price || productDoc.pricing?.price,
           stock: v.stock || 0,
-          optionValues: v.optionValues || {},
+          compareAtPrice: v.compareAtPrice || 0,
+          cost: v.cost || 0,
+          imageId: v.imageId || "",
+          optionValues: v.optionValues || v.options || {},
+          status: "active",
           createdAt: new Date(),
           updatedAt: new Date()
         });

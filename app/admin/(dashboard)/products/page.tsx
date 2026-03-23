@@ -7,14 +7,35 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Plus, Edit, Trash, Eye, ChevronDown, ChevronUp, Upload } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ProductsPage() {
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectAdminProducts);
   const loading = useAppSelector(selectAdminProductsLoading);
+  const router = useRouter();
   
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [importing, setImporting] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/ecommerce/products/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        dispatch(fetchProducts());
+      } else {
+        const data = await res.json();
+        alert(`Delete failed: ${data.message || "Unknown error"}`);
+      }
+    } catch {
+      alert("Delete failed. Please try again.");
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -133,9 +154,32 @@ export default function ProductsPage() {
                       </Button>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon"><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon"><Edit className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" className="text-destructive"><Trash className="h-4 w-4" /></Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="View Product"
+                        onClick={() => router.push(`/admin/products/${prod._id}`)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Edit Product"
+                        onClick={() => router.push(`/admin/products/${prod._id}/edit`)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="Delete Product"
+                        className="text-destructive hover:bg-destructive/10"
+                        disabled={deletingId === prod._id}
+                        onClick={() => handleDelete(prod._id, prod.name)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                   {expandedRow === prod._id && prod.variants && prod.variants.length > 0 && (
