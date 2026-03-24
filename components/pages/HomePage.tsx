@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   ArrowRight,
@@ -24,6 +24,11 @@ import {
 import { Link } from '@/lib/router';
 import { products, categories } from '@/data/products';
 import MainHeroSlider from './MainHeroSlider';
+import { AnnotatorPlugin } from '../annotationPlugin/AnnotatorPlugin';
+import GetAllPages from './GetAllPages';
+import { RootState } from '@/lib/store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { resetPageComments } from '@/lib/store/comments/commentSlice';
 
 // --- Homepage Specific Components ---
 
@@ -58,11 +63,13 @@ const Hero = () => (
   //     </motion.div>
   //   </div>
   // </section>
-  <MainHeroSlider/>
+  <section data-annotate-id="home-hero-section">
+    <MainHeroSlider />
+  </section>
 );
 
 const USP = () => (
-  <section className="px-[5%] pb-[60px] mt-20">
+  <section data-annotate-id="home-usp-section" className="px-[5%] pb-[90px] mt-20">
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -101,7 +108,7 @@ const USP = () => (
 );
 
 const Services = () => (
-  <section className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] ">
+  <section data-annotate-id="home-services-section" className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] ">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">What we offer</p>
@@ -134,7 +141,11 @@ const Services = () => (
 );
 
 const Collections = () => (
-  <section className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] " id="living">
+  <section
+    data-annotate-id="home-collections-section"
+    className="md:py-[60px] md:px-[5%] py-[50px] px-[5%] "
+    id="living"
+  >
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">Our Collections</h2>
       <Link href="/shop" className="px-6 h-11 rounded-full border border-secondary/45 text-foreground text-[14px] font-semibold uppercase tracking-wider hover:bg-secondary/15 transition-all flex items-center">View All</Link>
@@ -167,7 +178,11 @@ const Collections = () => (
 );
 
 const ShopByRoom = () => (
-  <section className="md:pt-[80px] md:pb-[120px] md:px-[5%] py-[50px] px-[5%]  pt-0" id="shop-room">
+  <section
+    data-annotate-id="home-shop-by-room-section"
+    className="md:pt-[80px] md:pb-[120px] md:px-[5%] py-[50px] px-[5%]  pt-0"
+    id="shop-room"
+  >
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Shop by Room</p>
@@ -207,7 +222,11 @@ const ShopByRoom = () => (
 );
 
 const FeaturedBanner = () => (
-  <section className="bg-primary text-white grid lg:grid-cols-2 items-center overflow-hidden " id="bedroom">
+  <section
+    data-annotate-id="home-featured-banner"
+    className="bg-primary text-white grid lg:grid-cols-2 items-center overflow-hidden "
+    id="bedroom"
+  >
     <motion.div
       initial={{ opacity: 0, x: -30 }}
       whileInView={{ opacity: 1, x: 0 }}
@@ -251,7 +270,7 @@ const ProductSlider = () => {
   };
 
   return (
-    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
+    <section data-annotate-id="home-product-slider-section" className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Best Sellers</p>
@@ -306,7 +325,7 @@ const ProductSlider = () => {
 };
 
 const Craft = () => (
-  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/50 border-y border-border">
+  <section data-annotate-id="home-craft-section" className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/50 border-y border-border">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Craft & Quality</p>
@@ -382,7 +401,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/55">
+    <section data-annotate-id="home-testimonials-section" className="md:py-[120px] md:px-[5%] py-[50px] px-[5%]  bg-surface/55">
       <div className="flex justify-center text-center mb-[60px]">
         <div>
           <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Client Stories</p>
@@ -448,7 +467,7 @@ const Blog = () => {
   };
 
   return (
-    <section className="md:py-[40px] md:px-[5%] py-[50px] px-[5%] ">
+    <section data-annotate-id="home-blog-section" className="md:py-[40px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex justify-between items-end mb-[60px] gap-[18px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight">The Journal</h2>
         <Link href="/blog" className="bg-primary text-white px-8 h-11 rounded-full text-[14px] font-semibold uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center md:flex hidden">View All Posts</Link>
@@ -500,7 +519,7 @@ const FAQ = () => {
   ];
 
   return (
-    <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
+    <section data-annotate-id="home-faq-section" className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
       <div className="flex flex-col items-center text-center mb-[60px]">
         <h2 className="md:text-[38px] text-[28px] font-bold leading-tight tracking-tight mb-4">Frequently Asked Questions</h2>
         <Link href="/faq" className="text-secondary font-black tracking-[2px] uppercase text-xs border-b border-secondary pb-1">View All FAQs</Link>
@@ -538,7 +557,7 @@ const Newsletter = () => {
   };
 
   return (
-    <section className="relative overflow-hidden border-y border-white/10 bg-[#0E6E35] px-[5%] py-[90px] text-white lg:py-[110px]">
+    <section data-annotate-id="home-newsletter-section" className="relative overflow-hidden border-y border-white/10 bg-[#0E6E35] px-[5%] py-[90px] text-white lg:py-[110px]">
       {/* background accents */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-120px] top-[-120px] h-[280px] w-[280px] rounded-full bg-white/5 blur-3xl" />
@@ -638,7 +657,7 @@ const Newsletter = () => {
 };
 
 const InstagramGallery = () => (
-  <section className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
+  <section data-annotate-id="home-instagram-gallery-section" className="md:py-[120px] md:px-[5%] py-[50px] px-[5%] ">
     <div className="flex justify-between items-end mb-[60px] gap-[18px]">
       <div>
         <p className="text-secondary uppercase tracking-[3px] text-[12px] font-black mb-2.5">Community</p>
@@ -670,8 +689,21 @@ const InstagramGallery = () => (
 );
 
 const HomePage = () => {
+
+  const {nestCraftUser}= useSelector((state:RootState)=>state.auth)
+     const dispatch= useDispatch()
+    //update the page
+    useEffect(()=>{
+      dispatch(resetPageComments())
+    },[])
   return (
     <>
+    {/* commentsS Plugin */}
+   {nestCraftUser?.role=="admin" && <AnnotatorPlugin />}
+
+    {/* get all page from the database */}
+    <GetAllPages/>
+   
       <Hero />
       <USP />
       <Services />
@@ -686,7 +718,7 @@ const HomePage = () => {
       <Newsletter />
       <InstagramGallery />
 
-      <section className="bg-foreground/90 text-surface text-center py-[110px] px-[5%] border-t border-border">
+      <section data-annotate-id="home-cta-section" className="bg-foreground/90 text-surface text-center py-[110px] px-[5%] border-t border-border">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -707,3 +739,5 @@ const HomePage = () => {
 };
 
 export default HomePage;
+
+

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "motion/react";
 import {
   ArrowRight,
@@ -15,6 +15,11 @@ import {
   Sparkles,
   Truck,
 } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
+import GetAllPages from "./GetAllPages";
+import { AnnotatorPlugin } from "../annotationPlugin/AnnotatorPlugin";
+import { resetPageComments } from "@/lib/store/comments/commentSlice";
 
 const stats = [
   { value: "12+", label: "Years of Craftsmanship" },
@@ -93,10 +98,25 @@ const assurances = [
 ];
 
 const AboutPage = () => {
+    const {nestCraftUser}= useSelector((state:RootState)=>state.auth)
+   const dispatch= useDispatch()
+    //update the page
+    // useEffect(()=>{
+    //   dispatch(resetPageComments())
+    // },[])
   return (
-    <div className="bg-background text-foreground">
+    <>
+        {/* commentsS Plugin */}
+   {nestCraftUser?.role=="admin" && <AnnotatorPlugin />}
+   {/* get all page from the database */}
+   <GetAllPages/>
+         
+    <div data-annotate-id="about-page-root" className="bg-background text-foreground">
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border bg-[#0f1f17] text-white">
+      <section
+        data-annotate-id="about-hero-section"
+        className="relative overflow-hidden border-b border-border bg-[#0f1f17] text-white"
+      >
         <div className="absolute inset-0">
           <img
             src="https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&q=80&w=1800"
@@ -199,7 +219,10 @@ const AboutPage = () => {
       </section>
 
       {/* STATS */}
-      <section className="border-b border-border bg-surface px-[5%] py-8">
+      <section
+        data-annotate-id="about-stats-section"
+        className="border-b border-border bg-surface px-[5%] py-8"
+      >
         <div className="mx-auto grid max-w-7xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {stats.map((item, idx) => (
             <motion.div
@@ -222,7 +245,10 @@ const AboutPage = () => {
       </section>
 
       {/* STORY + MISSION */}
-      <section className="mx-auto max-w-7xl px-[5%] py-24">
+      <section
+        data-annotate-id="about-story-section"
+        className="mx-auto max-w-7xl px-[5%] py-24"
+      >
         <div className="grid items-center gap-14 lg:grid-cols-[0.95fr_1.05fr]">
           <motion.div
             initial={{ opacity: 0, x: -24 }}
@@ -283,7 +309,10 @@ const AboutPage = () => {
       </section>
 
       {/* VALUES */}
-      <section className="border-y border-border bg-surface/50 px-[5%] py-24">
+      <section
+        data-annotate-id="about-values-section"
+        className="border-y border-border bg-surface/50 px-[5%] py-24"
+      >
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <p className="mb-3 text-[12px] font-black uppercase tracking-[3px] text-secondary">
@@ -324,7 +353,10 @@ const AboutPage = () => {
       </section>
 
       {/* PROCESS */}
-      <section className="mx-auto max-w-7xl px-[5%] py-24">
+      <section
+        data-annotate-id="about-process-section"
+        className="mx-auto max-w-7xl px-[5%] py-24"
+      >
         <div className="mb-14 max-w-3xl">
           <p className="mb-3 text-[12px] font-black uppercase tracking-[3px] text-secondary">
             Our Process
@@ -359,7 +391,10 @@ const AboutPage = () => {
       </section>
 
       {/* MATERIALS / SHOWROOM */}
-      <section className="border-y border-border bg-[#f7f4ef] px-[5%] py-24">
+      <section
+        data-annotate-id="about-materials-section"
+        className="border-y border-border bg-[#f7f4ef] px-[5%] py-24"
+      >
         <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
           <motion.div
             initial={{ opacity: 0, y: 18 }}
@@ -425,7 +460,10 @@ const AboutPage = () => {
       </section>
 
       {/* ASSURANCES */}
-      <section className="mx-auto max-w-7xl px-[5%] py-24">
+      <section
+        data-annotate-id="about-assurances-section"
+        className="mx-auto max-w-7xl px-[5%] py-24"
+      >
         <div className="mb-14 text-center">
           <p className="mb-3 text-[12px] font-black uppercase tracking-[3px] text-secondary">
             Why Choose Us
@@ -460,7 +498,7 @@ const AboutPage = () => {
       </section>
 
       {/* CTA */}
-      <section className="px-[5%] pb-20">
+      <section data-annotate-id="about-cta-section" className="px-[5%] pb-20">
         <div className="mx-auto max-w-7xl overflow-hidden rounded-[30px] bg-primary px-6 py-14 text-white sm:px-10 lg:px-14 lg:py-16">
           <div className="grid items-center gap-10 lg:grid-cols-[1fr_auto]">
             <div>
@@ -494,6 +532,7 @@ const AboutPage = () => {
         </div>
       </section>
     </div>
+    </>
   );
 };
 

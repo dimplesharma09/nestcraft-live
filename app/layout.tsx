@@ -3,6 +3,7 @@ import './globals.css';
 import Providers from '@/components/Providers';
 import LayoutWrapper from '@/components/LayoutWrapper';
 import StoreProvider from '@/app/StoreProvider';
+import { AnnotatorPlugin } from '@/components/annotationPlugin';
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <StoreProvider>
           <Providers>
             <LayoutWrapper>{children}</LayoutWrapper>
+            {/* <AnnotatorPlugin /> */}
           </Providers>
         </StoreProvider>
       </body>

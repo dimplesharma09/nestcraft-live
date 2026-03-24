@@ -37,6 +37,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { useDispatch } from "react-redux";
+import { logout } from "@/lib/store/auth/authSlice";
 
 const NAV_ITEMS = [
   {
@@ -60,9 +62,11 @@ const NAV_ITEMS = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-
+   const dispatch= useDispatch()
   const handleLogout = async () => {
     document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("nestCraftUser");
+    dispatch(logout())
     router.push("/admin/login");
     router.refresh();
   };

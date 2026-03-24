@@ -5,6 +5,9 @@ import { Package, Tags, Layers, ShoppingCart, TrendingUp, Activity, ArrowUpRight
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useSelector } from "react-redux";
+import { RootState } from "@/lib/store/store";
+import { redirect } from "next/navigation";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
@@ -13,7 +16,13 @@ export default function AdminDashboard() {
     orders: 0,
     attributes: 0
   });
+  const {nestCraftUser}= useSelector((state:RootState)=>state.auth);
 
+  // useEffect(() => {
+  //   if(!nestCraftUser){
+  //     redirect("/admin/login");
+  //   }
+  // }, [nestCraftUser]);
   useEffect(() => {
     const fetchStats = async () => {
       try {

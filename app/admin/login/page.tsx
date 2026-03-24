@@ -2,34 +2,46 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/store/store";
+import { loginThunk } from "@/lib/store/auth/authThunks";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
-
+ const dispatch= useDispatch<AppDispatch>();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
 
-    try {
-      const res = await fetch("/api/admin/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
-      });
+    const response= await dispatch(loginThunk({email,password})).unwrap()
+    console.log("login", response);
+        if(response.status){
+          router.push("/admin");
+          router.refresh();
+        }else{
+          toast.error("Invalid Credentials");
+        }
+    // try {
+    //   const res = await fetch("/api/admin/login", {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body: JSON.stringify({ email, password }),
+    //   });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.message || "Invalid credentials");
-      }
+    //   if (!res.ok) {
+    //     const data = await res.json();
+    //     throw new Error(data.message || "Invalid credentials");
+    //   }
 
-      router.push("/admin");
-      router.refresh();
-    } catch (err: any) {
-      setError(err.message);
-    }
+    //   router.push("/admin");
+    //   router.refresh();
+    // } catch (err: any) {
+    //   setError(err.message);
+    // }
   };
 
   return (

@@ -964,8 +964,11 @@ const SearchOverlay = ({
 };
 
 const Footer = () => (
-  <footer className="border-t border-border bg-surface px-[5%] pb-10 pt-20">
-    <div className="mb-10 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+  <footer
+    data-annotate-id="site-footer"
+    className="border-t border-border bg-surface px-[5%] pb-10 pt-20"
+  >
+    <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
       <div className="space-y-6">
         <Link href="/" className="block">
           <img
@@ -1148,7 +1151,10 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-secondary/30">
+    <div
+      data-annotate-id="site-shell"
+      className="min-h-screen bg-background text-foreground selection:bg-secondary/30"
+    >
       <Announcement />
       <Navbar
         theme={theme}
@@ -1159,7 +1165,9 @@ export default function SiteChrome({ children }: { children: React.ReactNode }) 
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
       />
-      <main className="pt-[106px] sm:pt-[110px]">{children}</main>
+      <main data-annotate-id="site-main" className="pt-[106px] sm:pt-[110px]">
+        {children}
+      </main>
       <Footer />
     </div>
   );

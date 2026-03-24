@@ -3,6 +3,10 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Mail, Phone, MapPin, Send, Instagram, Facebook, Twitter, CheckCircle2, ArrowRight, Globe, Clock } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/lib/store/store';
+import { AnnotatorPlugin } from '../annotationPlugin/AnnotatorPlugin';
+import GetAllPages from './GetAllPages';
 
 const ContactPage = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +18,7 @@ const ContactPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+      const {nestCraftUser}= useSelector((state:RootState)=>state.auth)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -30,6 +35,11 @@ const ContactPage = () => {
   };
 
   return (
+        <>
+        {/* commentsS Plugin */}
+   {nestCraftUser?.role=="admin" && <AnnotatorPlugin />}
+   {/* get all page from the database */}
+   <GetAllPages/>
     <div className="pb-20 bg-background">
       {/* Editorial Hero Section */}
       <section className="relative min-h-[70vh] flex items-center px-[5%] overflow-hidden border-b border-border">
@@ -308,6 +318,7 @@ const ContactPage = () => {
         </div>
       </section>
     </div>
+      </>
   );
 };
 

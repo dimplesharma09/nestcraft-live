@@ -3,6 +3,7 @@ import { getUserModel } from "@/models";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { serialize } from "cookie";
+import clientPromise from "@/lib/mongodb";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_jwt_secret_change_me_in_prod";
 
@@ -10,14 +11,17 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-
+  console.log(email,password);
     if (!email || !password) {
       return NextResponse.json({ success: false, message: "Email and password are required" }, { status: 400 });
     }
 
-    const User = await getUserModel();
+
+    const client = await clientPromise;
+    const db = client.db(); // Uses the DB name from the MONGODB_URI or default
+    const users = db.collection("users");
     // Assuming users are stored in the kalp_master DB in a "users" collection
-    const user = await User.findOne({ email });
+    const user = await users.findOne({ email });
 
     if (!user) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
@@ -32,6 +36,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: "Invalid credentials" }, { status: 401 });
     }
 
+    const { password: userPassword, ...userWithoutPassword } = user;
+
     // Generate JWT
     const token = jwt.sign({ id: user._id.toString(), email: user.email, role: user.role || 'admin' }, JWT_SECRET, { expiresIn: '1d' });
 
@@ -44,7 +50,10 @@ export async function POST(req: Request) {
       path: '/'
     });
 
-    const response = NextResponse.json({ success: true, user: { id: user._id.toString(), email: user.email, name: user.name } });
+    const response = NextResponse.json({ 
+      success: true, 
+      user: { ...userWithoutPassword, _id: user._id.toString() } 
+    });
     response.headers.set('Set-Cookie', cookieString);
     return response;
   } catch (error) {
