@@ -1,18 +1,20 @@
 "use client";
 
-import { 
-  LayoutDashboard, 
-  Package, 
-  Tags, 
-  Layers, 
-  ShoppingCart, 
-  LogOut, 
-  ListTree, 
-  ChevronUp, 
-  User2, 
+import {
+  LayoutDashboard,
+  Package,
+  Tags,
+  Layers,
+  ShoppingCart,
+  LogOut,
+  ListTree,
+  ChevronUp,
+  User2,
   Settings,
   Bell,
-  Sparkles
+  Sparkles,
+  FileText,
+  Image,
 } from "lucide-react";
 import {
   Sidebar,
@@ -44,17 +46,65 @@ const NAV_ITEMS = [
   {
     group: "Overview",
     items: [
-      { label: "Dashboard", href: "/admin", icon: LayoutDashboard, exact: true, badge: null },
-      { label: "Orders", href: "/admin/orders", icon: ShoppingCart, exact: false, badge: "3" },
+      {
+        label: "Dashboard",
+        href: "/admin",
+        icon: LayoutDashboard,
+        exact: true,
+        badge: null,
+      },
+      {
+        label: "Orders",
+        href: "/admin/orders",
+        icon: ShoppingCart,
+        exact: false,
+        badge: "3",
+      },
     ],
   },
   {
     group: "Store Management",
     items: [
-      { label: "Products", href: "/admin/products", icon: Package, exact: false, badge: null },
-      { label: "Categories", href: "/admin/categories", icon: Layers, exact: false, badge: null },
-      { label: "Attributes", href: "/admin/attributes", icon: Tags, exact: false, badge: null },
-      { label: "Variants", href: "/admin/variants", icon: ListTree, exact: false, badge: null },
+      {
+        label: "Products",
+        href: "/admin/products",
+        icon: Package,
+        exact: false,
+        badge: null,
+      },
+      {
+        label: "Categories",
+        href: "/admin/categories",
+        icon: Layers,
+        exact: false,
+        badge: null,
+      },
+      {
+        label: "Attributes",
+        href: "/admin/attributes",
+        icon: Tags,
+        exact: false,
+        badge: null,
+      },
+    ],
+  },
+  {
+    group: "Pages and Media",
+    items: [
+      {
+        label: "Pages",
+        href: "/admin/pages",
+        icon: FileText,
+        exact: false,
+        badge: null,
+      },
+      {
+        label: "Media",
+        href: "/admin/media",
+        icon: Image,
+        exact: false,
+        badge: null,
+      },
     ],
   },
 ];
@@ -62,11 +112,12 @@ const NAV_ITEMS = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-   const dispatch= useDispatch()
+  const dispatch = useDispatch();
   const handleLogout = async () => {
-    document.cookie = "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie =
+      "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     localStorage.removeItem("nestCraftUser");
-    dispatch(logout())
+    dispatch(logout());
     router.push("/admin/login");
     router.refresh();
   };
@@ -83,7 +134,11 @@ export function AppSidebar() {
         <div className="flex items-center gap-3 w-full">
           <div className="flex h-10 w-10 items-center border border-[#ddd] p-1 justify-center rounded-xl bg-[#fff] text-white">
             {/* <Sparkles size={20} /> */}
-            <img src="/assets/Image/favicon.svg" alt="Logo" className="w-10 h-10" />
+            <img
+              src="/assets/Image/favicon.svg"
+              alt="Logo"
+              className="w-10 h-10"
+            />
           </div>
           <div className="flex flex-col">
             <span className="text-base font-black uppercase text-foreground tracking-tight leading-none">
@@ -105,43 +160,47 @@ export function AppSidebar() {
             </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu className="gap-0.5">
-                {group.items.map(({ label, href, icon: Icon, exact, badge }) => {
-                  const active = isActive(href, exact);
-                  return (
-                    <SidebarMenuItem key={href}>
-                      <Link
-                        href={href}
-                        className={cn(
-                          "flex items-center gap-3 rounded-xl px-3 h-10 w-full text-sm font-semibold transition-all duration-150",
-                          active
-                            ? "bg-[#0d6533] text-white shadow-md shadow-[#0d6533]/25"
-                            : "text-muted-foreground hover:bg-[#0d6533]/10 hover:text-[#0d6533]"
-                        )}
-                      >
-                        <Icon
-                          size={18}
+                {group.items.map(
+                  ({ label, href, icon: Icon, exact, badge }) => {
+                    const active = isActive(href, exact);
+                    return (
+                      <SidebarMenuItem key={href}>
+                        <Link
+                          href={href}
                           className={cn(
-                            "shrink-0 transition-colors",
-                            active ? "text-white" : "text-muted-foreground group-hover:text-[#0d6533]"
+                            "flex items-center gap-3 rounded-xl px-3 h-10 w-full text-sm font-semibold transition-all duration-150",
+                            active
+                              ? "bg-[#0d6533] text-white shadow-md shadow-[#0d6533]/25"
+                              : "text-muted-foreground hover:bg-[#0d6533]/10 hover:text-[#0d6533]",
                           )}
-                        />
-                        <span>{label}</span>
-                        {badge && (
-                          <span
+                        >
+                          <Icon
+                            size={18}
                             className={cn(
-                              "ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold",
+                              "shrink-0 transition-colors",
                               active
-                                ? "bg-white/20 text-white"
-                                : "bg-[#98c45f] text-[#063A1D]"
+                                ? "text-white"
+                                : "text-muted-foreground group-hover:text-[#0d6533]",
                             )}
-                          >
-                            {badge}
-                          </span>
-                        )}
-                      </Link>
-                    </SidebarMenuItem>
-                  );
-                })}
+                          />
+                          <span>{label}</span>
+                          {badge && (
+                            <span
+                              className={cn(
+                                "ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-bold",
+                                active
+                                  ? "bg-white/20 text-white"
+                                  : "bg-[#98c45f] text-[#063A1D]",
+                              )}
+                            >
+                              {badge}
+                            </span>
+                          )}
+                        </Link>
+                      </SidebarMenuItem>
+                    );
+                  },
+                )}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
@@ -159,10 +218,17 @@ export function AppSidebar() {
                     <User2 size={18} />
                   </div>
                   <div className="flex flex-col flex-1 min-w-0">
-                    <span className="font-extrabold text-sm text-foreground leading-none mb-0.5">Admin User</span>
-                    <span className="text-[11px] text-muted-foreground truncate">admin@nestcraft.com</span>
+                    <span className="font-extrabold text-sm text-foreground leading-none mb-0.5">
+                      Admin User
+                    </span>
+                    <span className="text-[11px] text-muted-foreground truncate">
+                      admin@nestcraft.com
+                    </span>
                   </div>
-                  <ChevronUp size={16} className="text-muted-foreground shrink-0" />
+                  <ChevronUp
+                    size={16}
+                    className="text-muted-foreground shrink-0"
+                  />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -177,8 +243,12 @@ export function AppSidebar() {
                       <User2 size={18} />
                     </div>
                     <div>
-                      <p className="font-extrabold text-sm text-foreground">Admin User</p>
-                      <p className="text-[10px] text-[#0d6533] font-bold uppercase tracking-widest">Superadmin</p>
+                      <p className="font-extrabold text-sm text-foreground">
+                        Admin User
+                      </p>
+                      <p className="text-[10px] text-[#0d6533] font-bold uppercase tracking-widest">
+                        Superadmin
+                      </p>
                     </div>
                   </div>
                 </DropdownMenuLabel>
@@ -193,7 +263,9 @@ export function AppSidebar() {
                 <DropdownMenuItem className="cursor-pointer gap-2 py-2 rounded-lg text-muted-foreground hover:text-[#0d6533] focus:text-[#0d6533] focus:bg-[#0d6533]/8">
                   <Bell size={15} />
                   <span className="font-medium">Notifications</span>
-                  <span className="ml-auto bg-[#98c45f] text-[#063A1D] text-[10px] px-1.5 py-0.5 rounded-full font-bold">2</span>
+                  <span className="ml-auto bg-[#98c45f] text-[#063A1D] text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                    2
+                  </span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="bg-border/50 my-1" />
                 <DropdownMenuItem

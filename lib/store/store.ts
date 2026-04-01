@@ -1,13 +1,16 @@
-import { configureStore } from '@reduxjs/toolkit';
-import cartReducer from './features/cartSlice';
-import adminProductsReducer from './features/adminProductsSlice';
-import adminCategoriesReducer from './features/adminCategoriesSlice';
-import adminAttributesReducer from './features/adminAttributesSlice';
-import adminVariantsReducer from './features/adminVariantsSlice';
-import adminOrdersReducer from './features/adminOrdersSlice';
-import pagesReducer from './pages/pagesSlice';
-import commentsReducer from './comments/commentSlice';
-import authReducer from './auth/authSlice';
+import { configureStore } from "@reduxjs/toolkit";
+import cartReducer from "./features/cartSlice";
+// import adminProductsReducer from "./features/adminProductsSlice";
+import adminAttributesReducer from "./features/adminAttributesSlice";
+import adminVariantsReducer from "./features/adminVariantsSlice";
+import adminOrdersReducer from "./features/adminOrdersSlice";
+import pagesReducer from "./pages/pagesSlice";
+import commentsReducer from "./comments/commentSlice";
+import authReducer from "./auth/authSlice";
+import categoryReducer from "./categories/categoriesSlices";
+import productsReducer from "./products/productsSlices";
+import attributesReducer from "./attributes/attributeSlices";
+
 export const makeStore = () => {
   return configureStore({
     reducer: {
@@ -15,9 +18,14 @@ export const makeStore = () => {
       pages: pagesReducer,
       comments: commentsReducer,
       cart: cartReducer,
-      adminProducts: adminProductsReducer,
-      adminCategories: adminCategoriesReducer,
-      adminAttributes: adminAttributesReducer,
+      // adminProducts: adminProductsReducer,
+      // adminCategories: adminCategoriesReducer,
+      // adminAttributes: adminAttributesReducer,
+      // adminVariants: adminVariantsReducer,
+      // adminOrders: adminOrdersReducer,
+      adminProducts: productsReducer,
+      adminCategories: categoryReducer,
+      adminAttributes: attributesReducer,
       adminVariants: adminVariantsReducer,
       adminOrders: adminOrdersReducer,
     },
@@ -27,5 +35,5 @@ export const makeStore = () => {
 // Infer the type of makeStore
 export type AppStore = ReturnType<typeof makeStore>;
 // Infer the `RootState` and `AppDispatch` types from the store itself
-export type RootState = ReturnType<AppStore['getState']>;
-export type AppDispatch = AppStore['dispatch'];
+export type RootState = ReturnType<AppStore["getState"]>;
+export type AppDispatch = AppStore["dispatch"];

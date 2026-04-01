@@ -1,7 +1,23 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ListFilter, Plus, Pencil, Trash2, Save, X, Circle, CheckCircle2 } from "lucide-react";
+import {
+  ListFilter,
+  Plus,
+  Pencil,
+  Trash2,
+  Save,
+  X,
+  Circle,
+  CheckCircle2,
+} from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@/lib/store/store";
+import {
+  createAttributeSet,
+  deleteAttributeSet,
+  updateAttributeSet,
+} from "@/lib/store/attributes/attributesThunk";
 
 type AttributeFieldDraft = {
   key: string;
@@ -64,49 +80,66 @@ function fromRecord(record: AttributeSetRecord): AttributeSetDraft {
     appliesTo: record.appliesTo || "product",
     contexts: Array.isArray(record.contexts) ? record.contexts.join(", ") : "",
     description: record.description || "",
-    attributes: Array.isArray(record.attributes) && record.attributes.length > 0
-      ? record.attributes.map((attribute) => ({
-          key: attribute.key || "",
-          label: attribute.label || "",
-          type: attribute.type || "select",
-          options: Array.isArray(attribute.options) ? attribute.options.join(", ") : "",
-          enabled: attribute.enabled !== false,
-        }))
-      : [createEmptyField()],
+    attributes:
+      Array.isArray(record.attributes) && record.attributes.length > 0
+        ? record.attributes.map((attribute) => ({
+            key: attribute.key || "",
+            label: attribute.label || "",
+            type: attribute.type || "select",
+            options: Array.isArray(attribute.options)
+              ? attribute.options.join(", ")
+              : "",
+            enabled: attribute.enabled !== false,
+          }))
+        : [createEmptyField()],
+  };
+}
+
+function toPayload(draft: AttributeSetDraft) {
+  return {
+    name: draft.name.trim(),
+    key: draft.key.trim(),
+    appliesTo: draft.appliesTo,
+    contexts: draft.contexts
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean),
+    description: draft.description.trim(),
+    attributes: draft.attributes
+      .map((attribute) => ({
+        key: attribute.key.trim(),
+        label: attribute.label.trim(),
+        type: attribute.type || "select",
+        options: attribute.options
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
+        enabled: attribute.enabled,
+      }))
+      .filter((attribute) => attribute.key && attribute.label),
   };
 }
 
 export default function AttributesPage() {
-  const [loading, setLoading] = useState(true);
+  const { allattributes: records, attributeLoading: loading } = useSelector(
+    (state: RootState) => state.adminAttributes,
+  );
+  const dispatch = useDispatch<AppDispatch>();
   const [saving, setSaving] = useState(false);
-  const [records, setRecords] = useState<AttributeSetRecord[]>([]);
   const [search, setSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [toast, setToast] = useState("");
   const [form, setForm] = useState<AttributeSetDraft>(createEmptyDraft());
 
-  async function fetchRecords() {
-    setLoading(true);
-    try {
-      const res = await fetch("/api/ecommerce/attributes");
-      if (res.ok) {
-        const data = await res.json();
-        setRecords(Array.isArray(data) ? data : []);
-      }
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchRecords();
-  }, []);
-
   const filtered = useMemo(() => {
     const keyword = search.toLowerCase().trim();
     if (!keyword) return records;
-    return records.filter((r) => r.name.toLowerCase().includes(keyword) || r.key?.toLowerCase().includes(keyword));
+    return records.filter(
+      (r) =>
+        r.name.toLowerCase().includes(keyword) ||
+        r.key?.toLowerCase().includes(keyword),
+    );
   }, [records, search]);
 
   const showToast = (message: string) => {
@@ -127,67 +160,65 @@ export default function AttributesPage() {
   };
 
   const handleSave = async () => {
-    const payload = {
-      name: form.name.trim(),
-      key: form.key.trim(),
-      appliesTo: form.appliesTo,
-      contexts: form.contexts.split(",").map(i => i.trim()).filter(Boolean),
-      description: form.description.trim(),
-      attributes: form.attributes.map(a => ({
-        key: a.key.trim(),
-        label: a.label.trim(),
-        type: a.type || "select",
-        options: a.options.split(",").map(i => i.trim()).filter(Boolean),
-        enabled: a.enabled,
-      })).filter(a => a.key && a.label),
-    };
-
+    const payload = toPayload(form);
     if (!payload.name || payload.attributes.length === 0) {
       showToast("Name and at least one attribute are required.");
       return;
     }
 
     setSaving(true);
-    const endpoint = editingId ? `/api/ecommerce/attributes/${editingId}` : "/api/ecommerce/attributes";
-    const method = editingId ? "PUT" : "POST";
-
-    const res = await fetch(endpoint, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    setSaving(false);
-    if (res.ok) {
-      showToast(editingId ? "Attribute set updated." : "Attribute set created.");
-      resetForm();
-      fetchRecords();
+    let resultAction;
+    if (editingId) {
+      resultAction = await dispatch(
+        updateAttributeSet({ id: editingId, payload }),
+      );
     } else {
-      const data = await res.json();
-      showToast(data?.error || "Failed to save attribute set.");
+      resultAction = await dispatch(createAttributeSet(payload));
+    }
+    setSaving(false);
+
+    if (
+      createAttributeSet.fulfilled.match(resultAction) ||
+      updateAttributeSet.fulfilled.match(resultAction)
+    ) {
+      showToast(
+        editingId ? "Attribute set updated!" : "Attribute set created!",
+      );
+      resetForm();
+    } else {
+      showToast(
+        (resultAction.payload as any)?.message ||
+          "Failed to save attribute set.",
+      );
     }
   };
 
   const handleDelete = async (record: AttributeSetRecord) => {
     if (!confirm(`Delete attribute set "${record.name}"?`)) return;
-    const res = await fetch(`/api/ecommerce/attributes/${record._id}`, { method: "DELETE" });
-    if (res.ok) {
-      showToast("Attribute set deleted.");
-      fetchRecords();
+    const resultAction = await dispatch(deleteAttributeSet(record._id));
+    if (deleteAttributeSet.fulfilled.match(resultAction)) {
+      showToast("Attribute set deleted!");
     } else {
-      showToast("Failed to delete attribute set.");
+      showToast(
+        (resultAction.payload as any)?.message ||
+          "Failed to delete attribute set.",
+      );
     }
   };
-
-  const updateAttribute = (index: number, patch: Partial<AttributeFieldDraft>) => {
-    setForm(prev => ({
+  const updateAttribute = (
+    index: number,
+    patch: Partial<AttributeFieldDraft>,
+  ) => {
+    setForm((prev) => ({
       ...prev,
-      attributes: prev.attributes.map((a, i) => i === index ? { ...a, ...patch } : a),
+      attributes: prev.attributes.map((a, i) =>
+        i === index ? { ...a, ...patch } : a,
+      ),
     }));
   };
 
   const removeAttribute = (index: number) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       attributes: prev.attributes.filter((_, i) => i !== index),
     }));
@@ -207,12 +238,20 @@ export default function AttributesPage() {
             <ListFilter size={20} />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Attribute Sets</h1>
-            <p className="text-xs text-muted-foreground">Manage attribute sets for products and variants.</p>
+            <h1 className="text-2xl font-bold text-foreground">
+              Attribute Sets
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Manage attribute sets for products and variants.
+            </p>
           </div>
         </div>
         <button
-          onClick={() => { setForm(createEmptyDraft()); setEditingId(null); setShowForm(true); }}
+          onClick={() => {
+            setForm(createEmptyDraft());
+            setEditingId(null);
+            setShowForm(true);
+          }}
           className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90"
         >
           <Plus size={14} /> New Set
@@ -234,48 +273,126 @@ export default function AttributesPage() {
             <h2 className="font-sans text-sm font-bold uppercase tracking-wider text-foreground">
               {editingId ? "Edit Attribute Set" : "Create Attribute Set"}
             </h2>
-            <button onClick={resetForm} className="rounded-md p-1 text-muted-foreground hover:bg-muted/50 ">
+            <button
+              onClick={resetForm}
+              className="rounded-md p-1 text-muted-foreground hover:bg-muted/50 "
+            >
               <X size={14} />
             </button>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">Name</label>
-              <input value={form.name} onChange={(e) => setForm(prev => ({ ...prev, name: e.target.value }))} className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground" placeholder="Name" />
+              <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
+                Name
+              </label>
+              <input
+                value={form.name}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, name: e.target.value }))
+                }
+                className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground"
+                placeholder="Name"
+              />
             </div>
             <div>
-              <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">Key</label>
-              <input value={form.key} onChange={(e) => setForm(prev => ({ ...prev, key: e.target.value }))} className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm font-mono text-foreground" placeholder="key" />
+              <label className="mb-1 block text-[10px] uppercase tracking-widest text-muted-foreground">
+                Key
+              </label>
+              <input
+                value={form.key}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, key: e.target.value }))
+                }
+                className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm font-mono text-foreground"
+                placeholder="key"
+              />
             </div>
           </div>
-          
+
           <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-             <input value={form.description} onChange={(e) => setForm(prev => ({ ...prev, description: e.target.value }))} className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground" placeholder="Optional Description" />
-             <input value={form.contexts} onChange={(e) => setForm(prev => ({ ...prev, contexts: e.target.value }))} className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground" placeholder="Contexts (comma separated)" />
+            <input
+              value={form.description}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, description: e.target.value }))
+              }
+              className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground"
+              placeholder="Optional Description"
+            />
+            <input
+              value={form.contexts}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, contexts: e.target.value }))
+              }
+              className="w-full rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-sm text-foreground"
+              placeholder="Contexts (comma separated)"
+            />
           </div>
 
           <div className="mt-5 space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">Attributes</h3>
-              <button onClick={() => setForm(prev => ({ ...prev, attributes: [...prev.attributes, createEmptyField()] }))} className="inline-flex items-center gap-1 rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-1.5 text-xs font-semibold text-secondary">
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Attributes
+              </h3>
+              <button
+                onClick={() =>
+                  setForm((prev) => ({
+                    ...prev,
+                    attributes: [...prev.attributes, createEmptyField()],
+                  }))
+                }
+                className="inline-flex items-center gap-1 rounded-lg border border-secondary/30 bg-secondary/10 px-3 py-1.5 text-xs font-semibold text-secondary"
+              >
                 <Plus size={12} /> Add Field
               </button>
             </div>
 
             {form.attributes.map((attribute, index) => (
-              <div key={`${index}`} className="grid grid-cols-1 gap-2 rounded-lg border border-border bg-background shadow-xs p-3 md:grid-cols-12">
-                <input value={attribute.key} onChange={(e) => updateAttribute(index, { key: e.target.value })} placeholder="key" className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-2" />
-                <input value={attribute.label} onChange={(e) => updateAttribute(index, { label: e.target.value })} placeholder="label" className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-3" />
-                <select value={attribute.type} onChange={(e) => updateAttribute(index, { type: e.target.value })} className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-2">
+              <div
+                key={`${index}`}
+                className="grid grid-cols-1 gap-2 rounded-lg border border-border bg-background shadow-xs p-3 md:grid-cols-12"
+              >
+                <input
+                  value={attribute.key}
+                  onChange={(e) =>
+                    updateAttribute(index, { key: e.target.value })
+                  }
+                  placeholder="key"
+                  className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-2"
+                />
+                <input
+                  value={attribute.label}
+                  onChange={(e) =>
+                    updateAttribute(index, { label: e.target.value })
+                  }
+                  placeholder="label"
+                  className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-3"
+                />
+                <select
+                  value={attribute.type}
+                  onChange={(e) =>
+                    updateAttribute(index, { type: e.target.value })
+                  }
+                  className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-2"
+                >
                   <option value="select">Select</option>
                   <option value="multiselect">Multi Select</option>
                   <option value="text">Text</option>
                   <option value="number">Number</option>
                   <option value="boolean">Boolean</option>
                 </select>
-                <input value={attribute.options} onChange={(e) => updateAttribute(index, { options: e.target.value })} placeholder="Options (comma separated)" className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-4" />
-                <button onClick={() => removeAttribute(index)} className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-2 py-2 text-rose-300 md:col-span-1 flex justify-center">
+                <input
+                  value={attribute.options}
+                  onChange={(e) =>
+                    updateAttribute(index, { options: e.target.value })
+                  }
+                  placeholder="Options (comma separated)"
+                  className="rounded-lg border border-border bg-background shadow-xs px-3 py-2 text-xs text-foreground md:col-span-4"
+                />
+                <button
+                  onClick={() => removeAttribute(index)}
+                  className="rounded-lg border border-rose-500/30 bg-rose-500/10 px-2 py-2 text-rose-300 md:col-span-1 flex justify-center"
+                >
                   <Trash2 size={12} />
                 </button>
               </div>
@@ -283,44 +400,74 @@ export default function AttributesPage() {
           </div>
 
           <div className="mt-4">
-            <button onClick={handleSave} disabled={saving} className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60">
-              <Save size={14} /> {saving ? "Saving..." : editingId ? "Update Set" : "Create Set"}
+            <button
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60"
+            >
+              <Save size={14} />{" "}
+              {saving ? "Saving..." : editingId ? "Update Set" : "Create Set"}
             </button>
           </div>
         </section>
       )}
 
       {loading ? (
-        <div className="py-16 text-center text-sm text-muted-foreground">Loading attribute sets...</div>
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          Loading attribute sets...
+        </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center text-sm text-muted-foreground">No attribute sets found.</div>
+        <div className="py-16 text-center text-sm text-muted-foreground">
+          No attribute sets found.
+        </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 mt-4">
-          {filtered.map(record => (
-            <article key={record._id} className="rounded-xl border border-border bg-card shadow-sm p-4 hover:shadow-md">
+          {filtered.map((record) => (
+            <article
+              key={record._id}
+              className="rounded-xl border border-border bg-card shadow-sm p-4 hover:shadow-md"
+            >
               <div className="flex justify-between items-start mb-2">
-                 <div>
-                    <h3 className="font-sans text-sm font-semibold text-foreground">{record.name}</h3>
-                    <p className="text-[11px] text-muted-foreground font-mono">{record.key || "no-key"} | {record.attributes?.length || 0} attributes</p>
-                 </div>
-                 <div className="flex gap-2">
-                    <button onClick={() => handleEdit(record)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-primary">
-                      <Pencil size={13} />
-                    </button>
-                    <button onClick={() => handleDelete(record)} className="rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-rose-300">
-                      <Trash2 size={13} />
-                    </button>
-                 </div>
+                <div>
+                  <h3 className="font-sans text-sm font-semibold text-foreground">
+                    {record.name}
+                  </h3>
+                  <p className="text-[11px] text-muted-foreground font-mono">
+                    {record.key || "no-key"} | {record.attributes?.length || 0}{" "}
+                    attributes
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEdit(record)}
+                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-primary"
+                  >
+                    <Pencil size={13} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(record)}
+                    className="rounded-md p-1.5 text-muted-foreground hover:bg-muted/50 hover:text-rose-300"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                </div>
               </div>
               <div className="space-y-1 text-xs text-muted-foreground mt-3">
                 {(record.attributes || []).slice(0, 3).map((a, i) => (
-                  <div key={i} className="flex justify-between border-b border-border/60 py-1">
+                  <div
+                    key={i}
+                    className="flex justify-between border-b border-border/60 py-1"
+                  >
                     <span>{a.label}</span>
-                    <span className="text-[10px] text-muted-foreground">{a.type}</span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {a.type}
+                    </span>
                   </div>
                 ))}
                 {(record.attributes || []).length > 3 && (
-                   <p className="pt-1 text-[11px] text-muted-foreground">+ {(record.attributes || []).length - 3} more fields</p>
+                  <p className="pt-1 text-[11px] text-muted-foreground">
+                    + {(record.attributes || []).length - 3} more fields
+                  </p>
                 )}
               </div>
             </article>
