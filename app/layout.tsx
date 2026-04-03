@@ -6,6 +6,7 @@ import StoreProvider from '@/app/StoreProvider';
 import { AnnotatorPlugin } from '@/components/annotationPlugin';
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
+import ChunkErrorRecovery from '@/components/ChunkErrorRecovery';
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -29,6 +30,7 @@ export default function RootLayout({
       className={cn("font-sans", geist.variable)}
     >
       <body>
+        <ChunkErrorRecovery />
         <StoreProvider>
           <Providers>
             <LayoutWrapper>{children}</LayoutWrapper>
