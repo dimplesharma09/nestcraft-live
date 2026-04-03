@@ -552,7 +552,7 @@ import {
   Plus,
 } from "lucide-react";
 
-export const MediaUploader = () => {
+export const MediaUploader = ({ onSelect, hideHeader = false }: { onSelect?: (item: any) => void; hideHeader?: boolean }) => {
   const [activeTab, setActiveTab] = useState<string>("upload");
   const [uploadMethod, setUploadMethod] = useState<string>("file");
   const [selectedFiles, setSelectedFiles] = useState<any[]>([]);
@@ -643,7 +643,7 @@ export const MediaUploader = () => {
       id: mediaLibrary.length + 1,
       name: "Image from URL",
       url: urlInput,
-      altText: "Image from URL",
+      alt: "Image from URL",
       date: new Date().toISOString().split("T")[0],
       size: "N/A",
     };
@@ -696,19 +696,21 @@ export const MediaUploader = () => {
         className="max-w-5xl mx-auto"
       >
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8"
-        >
-          <h1 className="text-2xl font-semibold text-neutral-900 mb-1">
-            Media Library
-          </h1>
-          <p className="text-sm text-neutral-500">
-            Upload and manage your images
-          </p>
-        </motion.div>
+        {!hideHeader && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+            className="mb-8"
+          >
+            <h1 className="text-2xl font-semibold text-neutral-900 mb-1">
+              Media Library
+            </h1>
+            <p className="text-sm text-neutral-500">
+              Upload and manage your images
+            </p>
+          </motion.div>
+        )}
 
         {/* Tabs */}
         <motion.div
@@ -1075,7 +1077,7 @@ export const MediaUploader = () => {
           )}
         </AnimatePresence>
 
-        {/* <AnimatePresence>
+        <AnimatePresence>
           {selectedMedia && (
             <motion.div
               initial={{ opacity: 0 }}
@@ -1106,40 +1108,59 @@ export const MediaUploader = () => {
                 </div>
                 <img
                   src={selectedMedia.url}
-                  alt={selectedMedia.altText}
-                  className="w-full rounded-xl mb-4"
+                  alt={selectedMedia.alt || selectedMedia.altText || ""}
+                  className="w-full h-auto max-h-[400px] object-contain rounded-xl mb-4 bg-neutral-100"
                 />
                 <div className="space-y-2 text-sm">
-                  <div>
+                  <div className="flex justify-between border-b border-neutral-100 pb-2">
                     <span className="text-neutral-500">Name:</span>
-                    <span className="ml-2 text-neutral-900 font-medium">
-                      {selectedMedia.name}
+                    <span className="text-neutral-900 font-medium">
+                      {selectedMedia.filename}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex justify-between border-b border-neutral-100 pb-2">
                     <span className="text-neutral-500">Alt Text:</span>
-                    <span className="ml-2 text-neutral-900 font-medium">
-                      {selectedMedia.altText}
+                    <span className="text-neutral-900 font-medium">
+                      {selectedMedia.alt || "No alt text"}
                     </span>
                   </div>
-                  <div>
+                  <div className="flex justify-between">
                     <span className="text-neutral-500">Size:</span>
-                    <span className="ml-2 text-neutral-900 font-medium">
-                      {selectedMedia.size}
+                    <span className="text-neutral-900 font-medium">
+                      {typeof selectedMedia.size === 'number' ? `${(selectedMedia.size / 1024).toFixed(0)} KB` : selectedMedia.size}
                     </span>
                   </div>
                 </div>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full mt-6 py-3 bg-neutral-900 text-white rounded-xl font-medium text-sm hover:bg-neutral-800 transition-colors"
-                >
-                  Insert Image
-                </motion.button>
+                {onSelect ? (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      onSelect(selectedMedia);
+                      setSelectedMedia(null);
+                    }}
+                    className="w-full mt-6 py-3 bg-green-600 text-white rounded-xl font-medium text-sm hover:bg-green-700 transition-colors shadow-lg shadow-green-100"
+                  >
+                    Select & Insert Image
+                  </motion.button>
+                ) : (
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => {
+                      // Copy link logic or just close
+                      navigator.clipboard.writeText(selectedMedia.url);
+                      setSelectedMedia(null);
+                    }}
+                    className="w-full mt-6 py-3 bg-neutral-900 text-white rounded-xl font-medium text-sm hover:bg-neutral-800 transition-colors"
+                  >
+                    Copy Image URL
+                  </motion.button>
+                )}
               </motion.div>
             </motion.div>
           )}
-        </AnimatePresence> */}
+        </AnimatePresence>
       </motion.div>
     </div>
   );

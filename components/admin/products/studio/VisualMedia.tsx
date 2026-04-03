@@ -3,6 +3,7 @@ import { Image as ImageIcon, ImagePlus, Star, Trash2, Plus } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react";
 import { SectionCard } from "./Common";
 import { ProductGalleryItem, readFileAsDataUrl } from "@/lib/admin-products/utils";
+import { MediaLibraryModal } from "../../media/MediaLibraryModal";
 
 interface VisualMediaProps {
   gallery: ProductGalleryItem[];
@@ -98,34 +99,25 @@ export function VisualMedia({
             </motion.div>
           ))}
         </AnimatePresence>
-        <label className="aspect-square flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 cursor-pointer transition-all">
-          <ImagePlus className="text-slate-400" size={18} />
-          <span className="text-[8px] font-black uppercase text-slate-400">
-            Add
-          </span>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => handleGalleryUpload(e.target.files)}
-          />
-        </label>
-      </div>
-      <div className="mt-4 flex items-center gap-2">
-        <input
-          value={galleryUrlDraft}
-          onChange={(e) => onGalleryUrlDraftChange(e.target.value)}
-          placeholder="Image Remote URL..."
-          className="compact-input flex-1"
+        <MediaLibraryModal
+          onSelect={(media) => {
+            const id = `gal-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`;
+            onAddGalleryItem({
+              id,
+              url: media.url,
+              alt: media.alt || "",
+              order: gallery.length,
+            });
+          }}
+          trigger={
+            <div className="aspect-square flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-slate-200 bg-slate-50/50 hover:bg-slate-50 cursor-pointer transition-all h-full w-full">
+              <ImagePlus className="text-slate-400" size={18} />
+              <span className="text-[8px] font-black uppercase text-slate-400">
+                Add
+              </span>
+            </div>
+          }
         />
-        <button
-          type="button"
-          onClick={handleAddRemoteUrl}
-          className="p-2.5 bg-slate-100 text-slate-600 rounded-xl hover:bg-slate-200 transition-all"
-        >
-          <Plus size={16} />
-        </button>
       </div>
     </SectionCard>
   );

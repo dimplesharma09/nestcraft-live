@@ -46,18 +46,48 @@ const premiumHeroSlides = [
   },
 ];
 
-const MainHeroSlider = () => {
+export const extractTitleParts = (text: string) => {
+  if (!text) return { title: "", highlight: "", titleEnd: "" };
+  const defaultHighlights = ["Defines", "Quiet", "Beautifully"];
+  for (const h of defaultHighlights) {
+    if (text.includes(h)) {
+      const parts = text.split(h);
+      return {
+        title: parts[0]?.trim() || "",
+        highlight: h,
+        titleEnd: parts[1]?.trim() || "",
+      };
+    }
+  }
+  const words = text.split(" ");
+  if (words.length <= 2) return { title: text, highlight: "", titleEnd: "" };
+  const mid = Math.floor(words.length / 2);
+  return {
+    title: words.slice(0, mid).join(" "),
+    highlight: words[mid],
+    titleEnd: words.slice(mid + 1).join(" "),
+  };
+};
+
+const MainHeroSlider = ({ initialSlides = premiumHeroSlides }: { initialSlides?: any[] }) => {
+  const [slides, setSlides] = useState(initialSlides);
   const [activeIndex, setActiveIndex] = useState(0);
   const [progressKey, setProgressKey] = useState(0);
 
   useEffect(() => {
+    if (initialSlides && initialSlides.length > 0) {
+      setSlides(initialSlides);
+    }
+  }, [initialSlides]);
+
+  useEffect(() => {
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % premiumHeroSlides.length);
+      setActiveIndex((prev) => (prev + 1) % slides.length);
       setProgressKey((prev) => prev + 1);
     }, 10000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
 
   const goToSlide = (index: number) => {
     setActiveIndex(index);
@@ -65,16 +95,18 @@ const MainHeroSlider = () => {
   };
 
   const goNext = () => {
-    setActiveIndex((prev) => (prev + 1) % premiumHeroSlides.length);
+    setActiveIndex((prev) => (prev + 1) % slides.length);
     setProgressKey((prev) => prev + 1);
   };
 
   const goPrev = () => {
-    setActiveIndex((prev) => (prev - 1 + premiumHeroSlides.length) % premiumHeroSlides.length);
+    setActiveIndex(
+      (prev) => (prev - 1 + slides.length) % slides.length,
+    );
     setProgressKey((prev) => prev + 1);
   };
 
-  const activeSlide = premiumHeroSlides[activeIndex];
+  const activeSlide = slides[activeIndex] || premiumHeroSlides[0];
 
   return (
     <section className="relative min-h-[calc(100vh-106px)] overflow-hidden">
@@ -124,9 +156,19 @@ const MainHeroSlider = () => {
               </div>
 
               <h1 className="font-heading text-[44px] font-bold leading-[0.98] tracking-tight text-white sm:text-[54px] lg:text-[70px] xl:text-[82px]">
-                {activeSlide.title}
-                <span className="block text-secondary">{activeSlide.highlight}</span>
-                <span className="block">{activeSlide.titleEnd}</span>
+                {activeSlide.title && (
+                  <>
+                    {activeSlide.title}{" "}
+                  </>
+                )}
+                {activeSlide.highlight && (
+                  <span className="block text-secondary">
+                    {activeSlide.highlight}
+                  </span>
+                )}
+                {activeSlide.titleEnd && (
+                  <span className="block">{activeSlide.titleEnd}</span>
+                )}
               </h1>
 
               <p className="mt-6 max-w-[46ch] text-[17px] font-semibold leading-8 text-white/75 lg:text-[18px]">
@@ -142,35 +184,6 @@ const MainHeroSlider = () => {
                   Shop New Arrivals
                 </button>
               </div>
-
-              {/* <div className="mt-10 flex flex-wrap items-center gap-8 border-t border-white/15 pt-6">
-                <div>
-                  <h3 className="text-[26px] font-bold tracking-tight text-white lg:text-[32px]">
-                    12+
-                  </h3>
-                  <p className="mt-1 text-[11px] font-black uppercase tracking-[2px] text-white/60">
-                    Signature Collections
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-[26px] font-bold tracking-tight text-white lg:text-[32px]">
-                    5k+
-                  </h3>
-                  <p className="mt-1 text-[11px] font-black uppercase tracking-[2px] text-white/60">
-                    Happy Homes Styled
-                  </p>
-                </div>
-
-                <div>
-                  <h3 className="text-[26px] font-bold tracking-tight text-white lg:text-[32px]">
-                    4.9
-                  </h3>
-                  <p className="mt-1 text-[11px] font-black uppercase tracking-[2px] text-white/60">
-                    Customer Rating
-                  </p>
-                </div>
-              </div> */}
             </motion.div>
           </AnimatePresence>
 
@@ -198,8 +211,8 @@ const MainHeroSlider = () => {
                 </p>
 
                 <p className="mt-4 text-[15px] font-medium leading-7 text-white/72">
-                  Premium materials, sculptural comfort, and a refined silhouette
-                  designed for modern interiors.
+                  Premium materials, sculptural comfort, and a refined
+                  silhouette designed for modern interiors.
                 </p>
 
                 <div className="mt-6 flex items-center justify-between border-t border-white/15 pt-5">
@@ -226,13 +239,13 @@ const MainHeroSlider = () => {
                 key={progressKey}
                 initial={{ width: 0 }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 5, ease: "linear" }}
+                transition={{ duration: 10, ease: "linear" }}
                 className="h-full bg-secondary"
               />
             </div>
 
             <div className="flex items-center gap-3">
-              {premiumHeroSlides.map((slide, index) => (
+              {slides.map((slide, index) => (
                 <button
                   key={slide.id}
                   onClick={() => goToSlide(index)}

@@ -34,3 +34,8 @@ export const getOrderModel = async () => {
   const db = await connectTenantDB();
   return db.collection("orders");
 };
+
+export const getPageModel = async () => {
+  const db = await connectTenantDB();
+  return db.collection("pages");
+};

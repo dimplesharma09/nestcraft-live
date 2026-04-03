@@ -65,7 +65,7 @@ export const updatePageThunk = createAsyncThunk(
   'pages/update',
   async ({ id, pageData }: { id: string; pageData: Partial<Page> }, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/pages?id=${id}`, {
+      const response = await fetch(`/api/pages/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -76,7 +76,8 @@ export const updatePageThunk = createAsyncThunk(
         const errorData = await response.json();
         throw new Error(errorData.message || 'Failed to update page');
       }
-      return await response.json();
+      const data = await response.json();
+      return { _id: id, ...pageData } as Page; // Assuming API returns success
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -88,7 +89,7 @@ export const deletePageThunk = createAsyncThunk(
   'pages/delete',
   async (id: string, { rejectWithValue }) => {
     try {
-      const response = await fetch(`/api/pages?id=${id}`, {
+      const response = await fetch(`/api/pages/${id}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
