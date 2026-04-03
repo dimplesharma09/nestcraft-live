@@ -1,9 +1,6 @@
 import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  // Required for Hostinger Node.js hosting — bundles app with static assets correctly
-  output: 'standalone',
-
   // Tie build ID to deployment timestamp so each deploy gets unique chunk hashes
   generateBuildId: async () => {
     return `build-${Date.now()}`;
@@ -36,4 +33,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
