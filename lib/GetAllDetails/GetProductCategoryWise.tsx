@@ -8,7 +8,8 @@ import { AppDispatch } from "../store/store";
 import { fetchProductsByCategory } from "../store/products/productsThunk";
 import { useParams } from "next/navigation";
 
-function checkIsFetched(arr: any[], id: string) {
+function checkIsFetched(arr: any[] | null, id: string) {
+  if (!arr) return false;
   let main = arr.map((d) => d.categoryIds).flat();
   return main.includes(id);
 }
@@ -20,7 +21,6 @@ export default function GetAllProducts() {
   );
 
   const dispatch = useDispatch<AppDispatch>();
-
 
   useEffect(() => {
     if (checkIsFetched(allProducts, id)) {
