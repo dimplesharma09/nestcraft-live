@@ -8,8 +8,7 @@ import { AppDispatch } from "../store/store";
 import { fetchProductsByCategory } from "../store/products/productsThunk";
 import { useParams } from "next/navigation";
 
-function checkIsFetched(arr: any[] | null, id: string) {
-  if (!arr) return false;
+function checkIsFetched(arr: any[], id: string) {
   let main = arr.map((d) => d.categoryIds).flat();
   return main.includes(id);
 }
