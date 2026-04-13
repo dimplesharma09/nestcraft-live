@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { connectTenantDB } from "./db";
-import { isHex } from "@/app/api/ecommerce/categories/route";
 import { ObjectId } from "mongodb";
+import { isHex } from "./utils";
 
 function serialize(obj: any) {
   return JSON.parse(JSON.stringify(obj));

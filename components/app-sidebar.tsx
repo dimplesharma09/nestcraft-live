@@ -36,11 +36,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import Link from "next/link";
+import { AppDispatch } from "@/lib/store/store";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { useDispatch } from "react-redux";
 import { logout } from "@/lib/store/auth/authSlice";
+import { logoutThunk } from "@/lib/store/auth/authThunks";
+import Link from "next/link";
 
 const NAV_ITEMS = [
   {
@@ -112,13 +114,10 @@ const NAV_ITEMS = [
 export function AppSidebar() {
   const router = useRouter();
   const pathname = usePathname();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const handleLogout = async () => {
-    document.cookie =
-      "admin_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    localStorage.removeItem("nestCraftUser");
-    dispatch(logout());
-    router.push("/admin/login");
+    const user = await dispatch(logoutThunk());
+    router.push("/login");
     router.refresh();
   };
 

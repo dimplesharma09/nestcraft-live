@@ -33,6 +33,8 @@ export default function AdminDashboard() {
     (state: RootState) => state.auth,
   );
 
+  console.log(nestCraftUser);
+
   useEffect(() => {
     const fetchStats = async () => {
       try {

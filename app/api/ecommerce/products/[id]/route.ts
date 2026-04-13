@@ -3,25 +3,7 @@ import { getProductModel, getVariantModel } from "@/models";
 import { authenticateAdmin } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 import { connectTenantDB } from "@/lib/db";
-import { isHex } from "../../categories/route";
-
-// export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
-//   const { id } = await params;
-//   const auth = await authenticateAdmin();
-//   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-//   try {
-//     const Product = await getProductModel();
-//     const Variant = await getVariantModel();
-//     const product = await Product.findOne({ _id: new ObjectId(id) });
-//     if (!product) return NextResponse.json({ error: "Product not found" }, { status: 404 });
-
-//     const variants = await Variant.find({ productId: product._id }).toArray();
-//     return NextResponse.json({ ...product, variants });
-//   } catch (error: any) {
-//     return NextResponse.json({ error: error.message }, { status: 500 });
-//   }
-// }
+import { isHex } from "@/lib/utils";
 
 export async function GET(
   request: NextRequest,

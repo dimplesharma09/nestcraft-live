@@ -3,12 +3,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { useAppSelector, useAppDispatch } from "../../lib/store/hooks";
+import { selectCartTotal } from "../../lib/store/cart/cartSlice";
 import {
-  selectCartItems,
-  selectCartTotal,
-} from "../../lib/store/cart/cartSlice";
-import {
-  fetchCart,
   removeFromCartAsync,
   updateQuantityAsync,
 } from "../../lib/store/cart/cartThunk";
