@@ -16,6 +16,7 @@ import StoreProvider from "@/app/StoreProvider";
 import GetAllCategories from "@/lib/GetAllDetails/GetAllCategories";
 import GetAllProducts from "@/lib/GetAllDetails/GetAllProducts";
 import GetAllAttributes from "@/lib/GetAllDetails/GetAllAttributes";
+import GetUser from "@/lib/GetAllDetails/GetUser";
 
 const JWT_SECRET =
   process.env.JWT_SECRET || "default_jwt_secret_change_me_in_prod";
@@ -26,7 +27,9 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const cookieStore = await cookies();
-  const token = cookieStore.get("admin_token")?.value;
+  const token = cookieStore.get("auth_token")?.value;
+
+  let user: any;
 
   let isAuthenticated = false;
 
@@ -34,11 +37,12 @@ export default async function DashboardLayout({
     try {
       jwt.verify(token, JWT_SECRET);
       isAuthenticated = true;
+      user = jwt.decode(token);
     } catch (e) {}
   }
 
   if (!isAuthenticated) {
-    redirect("/admin/login");
+    redirect("/login");
   }
 
   return (
@@ -46,6 +50,7 @@ export default async function DashboardLayout({
       <GetAllCategories />
       <GetAllProducts />
       <GetAllAttributes />
+      <GetUser user={user} />
       <SidebarProvider>
         <AppSidebar />
         <main className="w-full flex-1 flex flex-col bg-muted/20 relative min-h-screen font-sans antialiased text-foreground">

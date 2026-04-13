@@ -1025,6 +1025,14 @@ const Header = ({
             >
               <HelpCircle size={13} /> Help Center
             </Link>
+            <Link
+              href="/admin"
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md 
+             bg-secondary/10 text-secondary font-medium
+             hover:bg-secondary/20 transition-all"
+            >
+              <User size={14} /> Admin
+            </Link>
           </div>
         </div>
 
