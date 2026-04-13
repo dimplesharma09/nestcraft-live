@@ -13,6 +13,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function Page() {
   const data = await getPageData("home");
-
+  //Minior
   return <HomePage data={data} />;
 }
