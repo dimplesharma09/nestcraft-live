@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import { Clock } from "lucide-react";
 import {
   Search,
   ShoppingCart,
@@ -873,65 +874,65 @@ const wsCategories: ShopMegaTab[] = [
     },
   },
   // --- New: Modular Kitchen & Wardrobe ---
-  {
-    key: "modular",
-    title: "Modular Kitchen & Wardrobe",
-    isModular: true,
-  },
+  // {
+  //   key: "modular",
+  //   title: "Modular Kitchen & Wardrobe",
+  //   isModular: true,
+  // },
   // --- New: WS Luxe ---
-  {
-    key: "NCluxe",
-    title: "NC Luxe",
-    isLuxe: true,
-    columns: [
-      {
-        sections: [
-          {
-            heading: "Luxury Living",
-            links: [
-              { title: "Luxe Sofas", href: "#" },
-              { title: "Luxe Lounge Chairs", href: "#" },
-              { title: "Premium Coffee Tables", href: "#" },
-              { title: "Luxe TV Units", href: "#" },
-            ],
-          },
-          {
-            heading: "Luxury Dining",
-            links: [
-              { title: "Premium Dining Sets", href: "#" },
-              { title: "Marble Dining Tables", href: "#" },
-              { title: "Luxe Dining Chairs", href: "#" },
-            ],
-          },
-        ],
-      },
-      {
-        sections: [
-          {
-            heading: "Luxury Bedroom",
-            links: [
-              { title: "Luxe Beds", href: "#" },
-              { title: "Upholstered Premium Beds", href: "#" },
-              { title: "Luxe Wardrobes", href: "#" },
-              { title: "Premium Bedside Tables", href: "#" },
-            ],
-          },
-          {
-            heading: "Luxury Decor",
-            links: [
-              { title: "Premium Wall Art", href: "#" },
-              { title: "Luxe Chandeliers", href: "#" },
-              { title: "Designer Rugs", href: "#" },
-            ],
-          },
-        ],
-      },
-    ],
-    promo: {
-      img: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=400",
-      href: "#",
-    },
-  },
+  // {
+  //   key: "NCluxe",
+  //   title: "NC Luxe",
+  //   isLuxe: true,
+  //   columns: [
+  //     {
+  //       sections: [
+  //         {
+  //           heading: "Luxury Living",
+  //           links: [
+  //             { title: "Luxe Sofas", href: "#" },
+  //             { title: "Luxe Lounge Chairs", href: "#" },
+  //             { title: "Premium Coffee Tables", href: "#" },
+  //             { title: "Luxe TV Units", href: "#" },
+  //           ],
+  //         },
+  //         {
+  //           heading: "Luxury Dining",
+  //           links: [
+  //             { title: "Premium Dining Sets", href: "#" },
+  //             { title: "Marble Dining Tables", href: "#" },
+  //             { title: "Luxe Dining Chairs", href: "#" },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //     {
+  //       sections: [
+  //         {
+  //           heading: "Luxury Bedroom",
+  //           links: [
+  //             { title: "Luxe Beds", href: "#" },
+  //             { title: "Upholstered Premium Beds", href: "#" },
+  //             { title: "Luxe Wardrobes", href: "#" },
+  //             { title: "Premium Bedside Tables", href: "#" },
+  //           ],
+  //         },
+  //         {
+  //           heading: "Luxury Decor",
+  //           links: [
+  //             { title: "Premium Wall Art", href: "#" },
+  //             { title: "Luxe Chandeliers", href: "#" },
+  //             { title: "Designer Rugs", href: "#" },
+  //           ],
+  //         },
+  //       ],
+  //     },
+  //   ],
+  //   promo: {
+  //     img: "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=400",
+  //     href: "#",
+  //   },
+  // },
 ];
 
 // --- 3-Tier Header Component ---
@@ -978,19 +979,19 @@ const Header = ({
           <div className="flex items-center gap-6 font-medium">
             <Link
               href="/furniture"
-              className="hover:text-secondary transition-colors text-secondary"
+              className="flex items-center gap-2 hover:text-secondary transition-colors"
             >
               Furniture
             </Link>
             <Link
               href="/home-interiors"
-              className="hover:text-secondary transition-colors"
+              className="flex items-center gap-2 hover:text-secondary transition-colors"
             >
               Home Interiors
             </Link>
             <Link
               href="/bulk-order"
-              className="hover:text-secondary transition-colors"
+              className="flex items-center gap-2 hover:text-secondary transition-colors"
             >
               Bulk Order
             </Link>
@@ -1005,12 +1006,20 @@ const Header = ({
               <Phone size={13} /> +91-9810159604
             </a>
             <div className="w-px h-3.5 bg-border/80"></div>
-            <Link
+            {/* <Link
               href="/franchise"
               className="flex items-center gap-1.5 hover:text-secondary transition-colors"
             >
               <Building2 size={13} /> Become a Franchise
-            </Link>
+            </Link> */}
+            <div>
+              <Link
+                href="/contact"
+                className="flex items-center gap-1 text-sm font-medium hover:text-secondary transition-colors"
+              >
+                Contact
+              </Link>
+            </div>
             <div className="w-px h-3.5 bg-border/80"></div>
             <Link
               href="/track-order"
@@ -1019,12 +1028,12 @@ const Header = ({
               <Truck size={13} /> Track Order
             </Link>
             <div className="w-px h-3.5 bg-border/80"></div>
-            <Link
+            {/* <Link
               href="/help"
               className="flex items-center gap-1.5 hover:text-secondary transition-colors"
             >
               <HelpCircle size={13} /> Help Center
-            </Link>
+            </Link> */}
             <Link
               href="/admin"
               className="flex items-center gap-1.5 px-2 py-1 rounded-md 
@@ -1078,13 +1087,13 @@ const Header = ({
                 Theme
               </span>
             </button>
-            <Link
+            {/* <Link
               href="/stores"
               className="hidden lg:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
             >
               <Store size={22} />
               <span className="text-[11px] font-medium">Stores</span>
-            </Link>
+            </Link> */}
             <Link
               href="/profile"
               className="hidden sm:flex flex-col items-center gap-1 text-muted hover:text-secondary transition-colors"
@@ -1117,13 +1126,13 @@ const Header = ({
             </Link>
           </div>
         </div>
-      </header>
+      </header >
 
       {/* TIER 3: Category Bar - STICKY logic applied here */}
-      <div
-        className={`hidden lg:block w-full bg-background border-y border-border shadow-sm z-[1150] transition-all duration-300 ${
-          isScrolled ? "fixed top-0 left-0" : "relative"
-        }`}
+      < div
+        className={`hidden lg:block w-full bg-background border-y border-border shadow-sm z-[1150] transition-all duration-300 ${isScrolled ? "fixed top-0 left-0" : "relative"
+          }`
+        }
       >
         <div
           className="mx-auto px-4 sm:px-[5%] xl:px-[8%] flex items-center justify-between"
@@ -1135,13 +1144,12 @@ const Header = ({
               <button
                 key={tab.key}
                 onMouseEnter={() => setActiveMegaTab(tab.key)}
-                className={`group relative py-4 text-[14px] font-medium transition-colors ${
-                  tab.isLuxe
-                    ? "text-black"
-                    : isActive
-                      ? "text-secondary"
-                      : "text-foreground hover:text-secondary"
-                }`}
+                className={`group relative py-4 text-[14px] font-medium transition-colors ${tab.isLuxe
+                  ? "text-black"
+                  : isActive
+                    ? "text-secondary"
+                    : "text-foreground hover:text-secondary"
+                  }`}
               >
                 <span>{tab.title}</span>
                 <span
@@ -1303,7 +1311,7 @@ const Header = ({
             )}
           </AnimatePresence>
         </div>
-      </div>
+      </div >
 
       {/* Placeholder to prevent layout jump when category bar becomes sticky */}
       {isScrolled && <div className="hidden lg:block h-[53px] w-full" />}
@@ -1379,10 +1387,10 @@ const SearchOverlay = ({
   const filteredProducts =
     query.length > 1
       ? products.filter(
-          (p) =>
-            p.title.toLowerCase().includes(query.toLowerCase()) ||
-            p.category.toLowerCase().includes(query.toLowerCase()),
-        )
+        (p) =>
+          p.title.toLowerCase().includes(query.toLowerCase()) ||
+          p.category.toLowerCase().includes(query.toLowerCase()),
+      )
       : [];
 
   const handleSelect = (id: number) => {
@@ -1465,7 +1473,7 @@ const Footer = () => (
               icon: Twitter,
               url: "https://x.com/NestCFurniture",
             },
-            { name: "Youtube", icon: Youtube, url: "#" },
+            // { name: "Youtube", icon: Youtube, url: "#" },
           ].map((social) => (
             <a
               key={social.name}
